@@ -1,0 +1,92 @@
+/*
+  Design tokens — docs/MASTER_SPECIFICATION.md sections 5.2 (palette), 5.3 (typography),
+  5.4 (grid/spacing) and 6.1 (motion). These are the only place raw hex/duration values
+  should appear; components consume them through Tailwind's @theme mapping below.
+*/
+
+:root {
+  color-scheme: light;
+
+  /* Palette — light theme */
+  --paper-50: #f7f8fa;
+  --paper-100: #eff1f5;
+  --text-950: #171a21;
+  --ink-100: #e8eaf0;
+
+  /* Section 5.2 lists #2F6BFF as an "indicative" hex pending WCAG validation (section 5.2 rule
+     of contrast); measured white-on-brand-500 contrast was 4.49:1 (axe-core), just under the
+     4.5:1 AA threshold for normal text. Darkened to #2559DE (5.89:1) to pass with margin. */
+  --brand-500: #2559de;
+  --brand-300: #79a1ff;
+  --success-500: #1f8f5f;
+  --warning-500: #a35f00;
+  --danger-500: #b33a3a;
+
+  --surface: var(--paper-50);
+  --surface-elevated: var(--paper-100);
+  --foreground: var(--text-950);
+  --foreground-muted: #52596b;
+  --border-subtle: #dfe2ea;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Motion tokens — section 6.1 */
+  --duration-instant: 80ms;
+  --duration-fast: 140ms;
+  --duration-standard: 220ms;
+  --duration-expressive: 360ms;
+  --duration-slow: 520ms;
+  --stagger-step: 45ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-expressive: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink-950: #0b0d12;
+  --ink-900: #11141b;
+  --ink-100: #e8eaf0;
+
+  --surface: var(--ink-950);
+  --surface-elevated: var(--ink-900);
+  --foreground: var(--ink-100);
+  --foreground-muted: #a7adc0;
+  --border-subtle: #262b38;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+    color-scheme: dark;
+    --ink-950: #0b0d12;
+    --ink-900: #11141b;
+    --ink-100: #e8eaf0;
+
+    --surface: var(--ink-950);
+    --surface-elevated: var(--ink-900);
+    --foreground: var(--ink-100);
+    --foreground-muted: #a7adc0;
+    --border-subtle: #262b38;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-standard: 0ms;
+    --duration-expressive: 0ms;
+    --duration-slow: 0ms;
+    --stagger-step: 0ms;
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "faq-release-dates",
+    "question": "Quand un jeu Nosfac Studios sortira-t-il ?",
+    "answer": "Aucune date de sortie n'est annoncée tant qu'elle n'est pas confirmée. Le statut affiché sur chaque page projet (concept, en développement, bêta, disponible...) reflète l'état réel du travail.",
+    "category": "getting-started",
+    "visibility": "public"
+  },
+  {
+    "id": "faq-contact-reply-time",
+    "question": "En combien de temps recevrai-je une réponse à mon message ?",
+    "answer": "Le studio lit chaque message, mais aucun délai de réponse n'est garanti. Le formulaire de contact confirme la bonne réception de votre demande.",
+    "category": "getting-started",
+    "visibility": "public"
+  },
+  {
+    "id": "faq-data-privacy",
+    "question": "Quelles données sont conservées lorsque j'envoie un message ?",
+    "answer": "Uniquement les informations nécessaires pour répondre à votre demande (message, coordonnées de réponse et pièce jointe éventuelle). Le détail des durées de conservation figure dans la politique de confidentialité.",
+    "category": "privacy",
+    "visibility": "public"
+  }
+]

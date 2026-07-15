@@ -1,0 +1,71 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-border-subtle: var(--border-subtle);
+  --color-brand-500: var(--brand-500);
+  --color-brand-300: var(--brand-300);
+  --color-success-500: var(--success-500);
+  --color-warning-500: var(--warning-500);
+  --color-danger-500: var(--danger-500);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --animate-duration-instant: var(--duration-instant);
+  --animate-duration-fast: var(--duration-fast);
+  --animate-duration-standard: var(--duration-standard);
+  --animate-duration-expressive: var(--duration-expressive);
+  --animate-duration-slow: var(--duration-slow);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border-subtle);
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    background: var(--surface);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    min-height: 100%;
+  }
+
+  ::selection {
+    background: var(--brand-300);
+    color: var(--ink-950, #0b0d12);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand-500);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
