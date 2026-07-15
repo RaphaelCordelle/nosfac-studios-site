@@ -40,7 +40,8 @@ export const FOOTER_SECTIONS: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Mentions légales", href: "/legal/legal-notice" },
       { label: "Confidentialité", href: "/legal/privacy" },
-      { label: "Conditions d’utilisation", href: "/legal/terms" },
+      { label: "Suppression de compte", href: "/suppression-compte" },
+      { label: "Conditions d'utilisation", href: "/legal/terms" },
       { label: "Cookies", href: "/legal/cookies" },
     ],
   },
