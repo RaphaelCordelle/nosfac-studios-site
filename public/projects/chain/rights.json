@@ -1,0 +1,34 @@
+{
+  "chain-home-screen-v1.png": {
+    "type": "screenshot",
+    "source": "Capture d'écran réelle du build de développement de l'application Chain",
+    "owner": "Nosfac Studios",
+    "dateAdded": "2026-07-15",
+    "license": "Propriété de Nosfac Studios",
+    "restrictions": "Ne pas utiliser hors contexte éditorial Nosfac Studios"
+  },
+  "chain-splash-v1.png": {
+    "type": "screenshot",
+    "source": "Capture d'écran réelle de l'écran de chargement de l'application Chain",
+    "owner": "Nosfac Studios",
+    "dateAdded": "2026-07-15",
+    "license": "Propriété de Nosfac Studios",
+    "restrictions": "Ne pas utiliser hors contexte éditorial Nosfac Studios"
+  },
+  "chain-icon-3d-v1.png": {
+    "type": "logo-concept",
+    "source": "Visuel de marque généré par IA, fourni par le fondateur",
+    "owner": "Nosfac Studios",
+    "dateAdded": "2026-07-15",
+    "license": "Propriété de Nosfac Studios",
+    "restrictions": "Icône de concept — à remplacer par l'icône finale de publication si différente"
+  },
+  "chain-icon-flat-v1.png": {
+    "type": "logo-concept",
+    "source": "Visuel de marque généré par IA, fourni par le fondateur",
+    "owner": "Nosfac Studios",
+    "dateAdded": "2026-07-15",
+    "license": "Propriété de Nosfac Studios",
+    "restrictions": "Icône de concept — à remplacer par l'icône finale de publication si différente"
+  }
+}

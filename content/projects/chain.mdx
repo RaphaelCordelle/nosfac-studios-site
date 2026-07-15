@@ -6,7 +6,7 @@ name: "Chain"
 provisionalName: false
 type: "game"
 status: "development"
-featured: false
+featured: true
 summary: "Un jeu mobile de chaînes de mots, rapide et compétitif — pitch final à confirmer après validation du gameplay."
 role: ["Conception et développement"]
 platforms:
@@ -16,12 +16,34 @@ platforms:
   - id: "android"
     label: "Android"
     confirmed: true
-technologies: []
-updatedAt: "2026-07-13T00:00:00.000Z"
+technologies: ["Flutter", "Dart", "Supabase"]
+updatedAt: "2026-07-15T00:00:00.000Z"
 accent:
   hex: "#2F6BFF"
-  name: "Chain Blue (placeholder — à remplacer par une couleur dérivée des assets réels)"
-gallery: []
+  name: "Chain Blue"
+heroMedia:
+  type: "image"
+  src: "/projects/chain/chain-home-screen-v1.png"
+  alt: "Capture d'écran réelle de l'accueil de Chain : record de chaîne, mode solo et mode Entre amis."
+  width: 511
+  height: 1107
+  caption: "Interface réelle — build de développement"
+gallery:
+  - type: "image"
+    src: "/projects/chain/chain-splash-v1.png"
+    alt: "Écran de chargement de Chain avec le logo du jeu et la mention « Conçu par Nosfac Studios »."
+    width: 941
+    height: 1672
+  - type: "image"
+    src: "/projects/chain/chain-icon-3d-v1.png"
+    alt: "Icône 3D de Chain représentant des maillons de chaîne colorés."
+    width: 1254
+    height: 1254
+  - type: "image"
+    src: "/projects/chain/chain-icon-flat-v1.png"
+    alt: "Variante plate de l'icône de Chain, deux anneaux entrelacés bleu et vert."
+    width: 1254
+    height: 1254
 features: []
 links: []
 faqIds: []
@@ -45,9 +67,10 @@ rythme de jeu, avant l'ajout de systèmes plus complexes.
 
 ## Où en est le projet
 
-Chain est **en développement actif**. Aucune date de sortie n'est communiquée. Les parties privées (2 à 15
-joueurs) font partie des objectifs de conception, mais leur disponibilité n'est confirmée qu'au moment où
-elles sont réellement testables.
+Chain est **en développement actif**, avec une base technique déjà solide : authentification, profils
+joueurs, classements, achats intégrés et anti-triche côté serveur sont déjà implémentés et vérifiés. Aucune
+date de sortie n'est communiquée. Les parties privées (2 à 15 joueurs) font partie des objectifs de
+conception, mais leur disponibilité n'est confirmée qu'au moment où elles sont réellement testables.
 
-> Ce texte est un cadre de contenu provisoire. Captures, vidéo et détails de gameplay seront ajoutés dès
-> qu'une version présentable existera.
+> Les captures ci-dessus proviennent d'un build de développement réel. Le contenu de gameplay détaillé
+> sera précisé au fil de l'avancement du projet.

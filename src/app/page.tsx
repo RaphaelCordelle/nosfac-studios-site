@@ -44,12 +44,7 @@ export default function HomePage() {
 
         {featured ? (
           <div className="md:col-span-7">
-            <MediaFrame
-              media={featured.heroMedia}
-              accentHex={featured.accent.hex}
-              respectMediaAspectRatio
-              priority
-            />
+            <MediaFrame media={featured.heroMedia} accentHex={featured.accent.hex} priority />
             <div className="mt-4 flex items-center justify-between gap-4">
               <div>
                 <ProjectStatusBadge status={featured.status} />
