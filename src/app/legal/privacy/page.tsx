@@ -140,11 +140,18 @@ export default function PrivacyPage() {
         l’application concernée (section suivante).
       </p>
 
-      <h2>Supprimer votre compte</h2>
+      <h2 id="supprimer-mon-compte">Supprimer votre compte</h2>
       <p>
         Pour Chain, vous pouvez supprimer votre compte et toutes les données associées à tout moment,
         directement dans l’application : <strong>Profil → Centre légal → Supprimer mon compte</strong>. La
         suppression est immédiate et irréversible.
+      </p>
+      <p>
+        Si vous n’avez plus accès à l’application (compte perdu, application désinstallée), vous pouvez
+        demander la suppression de votre compte sans la réinstaller en écrivant à{" "}
+        <a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a> ou via le{" "}
+        <a href="/support/contact?reason=support&project=chain">formulaire de contact</a>. Traitée
+        manuellement, la demande est effectuée dans les meilleurs délais.
       </p>
       <p>
         Note : un achat actif comme un abonnement reste géré par Google Play et doit être résilié
