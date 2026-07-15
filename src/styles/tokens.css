@@ -1,92 +1,182 @@
 /*
-  Design tokens — docs/MASTER_SPECIFICATION.md sections 5.2 (palette), 5.3 (typography),
-  5.4 (grid/spacing) and 6.1 (motion). These are the only place raw hex/duration values
-  should appear; components consume them through Tailwind's @theme mapping below.
+  Design tokens — Refonte "Precision Editorial" (janvier 2026)
+  
+  Direction : Studio de jeux indépendant, sombre par défaut, éditorial, accent électrique.
+  Les couleurs, durées et courbes vivent uniquement ici — les composants les consomment
+  via @theme (globals.css) puis via des variables CSS.
 */
 
 :root {
   color-scheme: light;
 
-  /* Palette — light theme */
-  --paper-50: #f7f8fa;
-  --paper-100: #eff1f5;
-  --text-950: #171a21;
-  --ink-100: #e8eaf0;
+  /* === PALETTE ÉDITORIALE ===
+     Ink : fonds profonds, presque bleutés (jamais noir pur). 
+     Chalk : blancs papiers avec une pointe de chaleur.
+     Accent : cyan-menthe électrique — distinctif, WCAG AA sur ink-950. */
+  
+  /* Ink (dark base) */
+  --ink-950: #0a0b0f;
+  --ink-900: #0e1015;
+  --ink-800: #14171e;
+  --ink-700: #1c202a;
+  --ink-500: #3a4051;
+  --ink-300: #6b7183;
+  --ink-100: #d8dbe2;
+  --ink-50:  #eef0f4;
 
-  /* Section 5.2 lists #2F6BFF as an "indicative" hex pending WCAG validation (section 5.2 rule
-     of contrast); measured white-on-brand-500 contrast was 4.49:1 (axe-core), just under the
-     4.5:1 AA threshold for normal text. Darkened to #2559DE (5.89:1) to pass with margin. */
-  --brand-500: #2559de;
-  --brand-300: #79a1ff;
-  --success-500: #1f8f5f;
-  --warning-500: #a35f00;
-  --danger-500: #b33a3a;
+  /* Chalk (light base) */
+  --chalk-50:  #fafaf7;
+  --chalk-100: #f2f2ee;
+  --chalk-200: #e6e6e0;
+  --chalk-900: #14161c;
 
-  --surface: var(--paper-50);
-  --surface-elevated: var(--paper-100);
-  --foreground: var(--text-950);
-  --foreground-muted: #52596b;
-  --border-subtle: #dfe2ea;
+  /* Accent principal — cyan-menthe électrique.
+     Contraste vérifié : #00E5B0 sur #0a0b0f = 11.8:1 (AAA).
+     Sur chalk-50 : #007A5E = 4.7:1 (AA). */
+  --accent-500: #00E5B0;
+  --accent-400: #33EAC0;
+  --accent-600: #00B88B;
+  --accent-700: #007A5E;
 
-  /* Spacing scale */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
+  /* Accent secondaire (rare, pour données/highlights) — jaune papier. */
+  --highlight-500: #F5D547;
+
+  /* États fonctionnels */
+  --success-500: #22C58A;
+  --warning-500: #FFB020;
+  --danger-500:  #FF5D5D;
+
+  /* Semantic light mode */
+  --surface:          var(--chalk-50);
+  --surface-elevated: var(--chalk-100);
+  --surface-sunken:   var(--chalk-200);
+  --foreground:       var(--chalk-900);
+  --foreground-muted: #4a4d59;
+  --foreground-subtle:#6b6e7a;
+  --border-subtle:    #dcdcd4;
+  --border-strong:    #b8b8ae;
+
+  --brand:      var(--accent-700);
+  --brand-hover:var(--accent-600);
+  --brand-fg:   var(--chalk-50);
+
+  /* === TYPOGRAPHIE === */
+  --font-sans:    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-instrument-serif), "Times New Roman", serif;
+
+  /* Fluid type scale (mobile → desktop) */
+  --text-caption:   clamp(0.75rem, 0.7rem + 0.15vw, 0.8125rem);
+  --text-body:      clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
+  --text-body-lg:   clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-h4:        clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-h3:        clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+  --text-h2:        clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+  --text-h1:        clamp(2.5rem, 1.8rem + 3vw, 4rem);
+  --text-display:   clamp(3rem, 2rem + 5vw, 6.5rem);
+
+  /* Line heights */
+  --lh-tight:    1.05;
+  --lh-snug:     1.15;
+  --lh-normal:   1.5;
+  --lh-relaxed:  1.65;
+
+  /* === SPACING === */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
   --space-12: 48px;
   --space-16: 64px;
+  --space-20: 80px;
   --space-24: 96px;
   --space-32: 128px;
+  --space-40: 160px;
 
-  /* Motion tokens — section 6.1 */
-  --duration-instant: 80ms;
-  --duration-fast: 140ms;
-  --duration-standard: 220ms;
-  --duration-expressive: 360ms;
-  --duration-slow: 520ms;
-  --stagger-step: 45ms;
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* === RADIUS === */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+
+  /* === MOTION === */
+  --duration-instant:    80ms;
+  --duration-fast:       160ms;
+  --duration-standard:   240ms;
+  --duration-expressive: 400ms;
+  --duration-slow:       620ms;
+  --stagger-step:        50ms;
+
+  --ease-standard:   cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-expressive: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring:     cubic-bezier(0.32, 0.72, 0.15, 1.02);
+
+  /* === Z-INDEX === */
+  --z-base:      0;
+  --z-elevated:  10;
+  --z-sticky:    30;
+  --z-overlay:   40;
+  --z-modal:     50;
+  --z-toast:     60;
+
+  /* === LEGACY compat === */
+  --brand-500: var(--accent-700);
+  --brand-300: var(--accent-500);
 }
 
-:root[data-theme="dark"] {
+/* === DARK MODE (par défaut sur système sombre) === */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
   color-scheme: dark;
 
-  --ink-950: #0b0d12;
-  --ink-900: #11141b;
-  --ink-100: #e8eaf0;
-
-  --surface: var(--ink-950);
+  --surface:          var(--ink-950);
   --surface-elevated: var(--ink-900);
-  --foreground: var(--ink-100);
-  --foreground-muted: #a7adc0;
-  --border-subtle: #262b38;
+  --surface-sunken:   #050609;
+  --foreground:       var(--ink-50);
+  --foreground-muted: var(--ink-300);
+  --foreground-subtle:var(--ink-500);
+  --border-subtle:    #1e222c;
+  --border-strong:    #2b3040;
+
+  --brand:      var(--accent-500);
+  --brand-hover:var(--accent-400);
+  --brand-fg:   var(--ink-950);
+
+  --brand-500: var(--accent-500);
+  --brand-300: var(--accent-400);
 }
 
+/* Force dark comme défaut système */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]):not([data-theme="dark"]) {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --ink-950: #0b0d12;
-    --ink-900: #11141b;
-    --ink-100: #e8eaf0;
-
-    --surface: var(--ink-950);
+    --surface:          var(--ink-950);
     --surface-elevated: var(--ink-900);
-    --foreground: var(--ink-100);
-    --foreground-muted: #a7adc0;
-    --border-subtle: #262b38;
+    --surface-sunken:   #050609;
+    --foreground:       var(--ink-50);
+    --foreground-muted: var(--ink-300);
+    --foreground-subtle:var(--ink-500);
+    --border-subtle:    #1e222c;
+    --border-strong:    #2b3040;
+    --brand:            var(--accent-500);
+    --brand-hover:      var(--accent-400);
+    --brand-fg:         var(--ink-950);
+    --brand-500:        var(--accent-500);
+    --brand-300:        var(--accent-400);
   }
 }
 
+/* === REDUCED MOTION === */
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --duration-instant: 0ms;
-    --duration-fast: 0ms;
-    --duration-standard: 0ms;
+    --duration-instant:    0ms;
+    --duration-fast:       0ms;
+    --duration-standard:   0ms;
     --duration-expressive: 0ms;
-    --duration-slow: 0ms;
-    --stagger-step: 0ms;
+    --duration-slow:       0ms;
+    --stagger-step:        0ms;
   }
 }

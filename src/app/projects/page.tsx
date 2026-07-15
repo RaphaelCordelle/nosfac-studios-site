@@ -4,6 +4,8 @@ import { ProjectCard } from "@/components/content/project-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterChip } from "@/components/ui/filter-chip";
 import { ProjectTypeSchema, type ProjectType } from "@/domain/project";
+import { Reveal } from "@/components/motion/reveal";
+import { AnimatedHeading } from "@/components/motion/animated-heading";
 
 export const metadata: Metadata = {
   title: "Projets",
@@ -31,48 +33,97 @@ export default async function ProjectsIndexPage({
   const rest = projects.filter((p) => p.slug !== featured?.slug);
 
   const availableTypes = Array.from(new Set(allProjects.map((p) => p.type)));
+  const total = allProjects.length;
 
   return (
-    <div className="mx-auto max-w-[1280px] px-5 py-12 md:px-8 md:py-16">
-      <header className="max-w-2xl">
-        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Projets</h1>
-        <p className="mt-4 text-foreground-muted">
-          Jeux, applications et expérimentations construits sous Nosfac Studios —{" "}
-          {allProjects.length} projet{allProjects.length > 1 ? "s" : ""} publié
-          {allProjects.length > 1 ? "s" : ""}.
-        </p>
-      </header>
+    <div className="relative">
+      {/* Hero header */}
+      <section className="relative overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-32 right-[-8%] h-[500px] w-[500px] rounded-full bg-accent-500/8 blur-[110px]"
+        />
+        <div className="mx-auto max-w-[1400px] px-5 pt-16 pb-10 md:px-8 md:pt-24 md:pb-14">
+          <div className="mb-8 flex items-center gap-2 font-mono text-[11px] tracking-wider text-foreground-subtle uppercase md:mb-12">
+            <span>Catalogue</span>
+            <span className="text-foreground-subtle/40" aria-hidden>·</span>
+            <span>{String(total).padStart(2, "0")} projet{total > 1 ? "s" : ""} publié{total > 1 ? "s" : ""}</span>
+          </div>
 
-      {availableTypes.length > 1 ? (
-        <nav aria-label="Filtrer les projets" className="mt-8 flex gap-2 overflow-x-auto pb-2">
-          <FilterChip href="/projects" active={!activeType}>
-            Tous
-          </FilterChip>
-          {availableTypes.map((t) => (
-            <FilterChip key={t} href={`/projects?type=${t}`} active={activeType === t}>
-              {TYPE_LABELS[t]}
-            </FilterChip>
-          ))}
-        </nav>
-      ) : null}
-
-      <div className="mt-10">
-        {projects.length === 0 ? (
-          <EmptyState
-            title="Aucun projet ne correspond à ces filtres."
-            action={<FilterChip href="/projects" active>Réinitialiser</FilterChip>}
-          />
-        ) : (
-          <div className="flex flex-col gap-6">
-            {featured ? <ProjectCard project={featured} variant="featured" /> : null}
-            <div className="grid gap-6 md:grid-cols-2">
-              {rest.map((project) => (
-                <ProjectCard key={project.slug} project={project} />
-              ))}
+          <div className="grid gap-6 md:grid-cols-12 md:items-end">
+            <div className="md:col-span-8">
+              <AnimatedHeading
+                as="h1"
+                className="text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-[0.98] tracking-[-0.03em]"
+              >
+                Ce que nous
+              </AnimatedHeading>
+              <h1
+                aria-hidden
+                className="mt-1 text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-[0.98] tracking-[-0.03em]"
+              >
+                <span className="font-display italic text-accent-500">construisons</span>.
+              </h1>
+            </div>
+            <div className="md:col-span-4">
+              <p className="max-w-md text-base leading-relaxed text-foreground-muted md:text-lg">
+                Jeux, applications et expérimentations. Chaque projet a sa propre ambiance ; tous
+                partagent la même exigence d&apos;exécution.
+              </p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
+
+      {/* Filters + grid */}
+      <section className="border-t border-border-subtle">
+        <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
+          {availableTypes.length > 1 ? (
+            <nav
+              aria-label="Filtrer les projets"
+              className="mb-10 flex gap-2 overflow-x-auto pb-2"
+            >
+              <FilterChip href="/projects" active={!activeType}>
+                Tous · {allProjects.length}
+              </FilterChip>
+              {availableTypes.map((t) => {
+                const count = allProjects.filter((p) => p.type === t).length;
+                return (
+                  <FilterChip key={t} href={`/projects?type=${t}`} active={activeType === t}>
+                    {TYPE_LABELS[t]} · {count}
+                  </FilterChip>
+                );
+              })}
+            </nav>
+          ) : null}
+
+          {projects.length === 0 ? (
+            <EmptyState
+              title="Aucun projet ne correspond à ces filtres."
+              action={
+                <FilterChip href="/projects" active>
+                  Réinitialiser
+                </FilterChip>
+              }
+            />
+          ) : (
+            <div className="flex flex-col gap-6 md:gap-8">
+              {featured ? (
+                <Reveal>
+                  <ProjectCard project={featured} variant="featured" />
+                </Reveal>
+              ) : null}
+              <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+                {rest.map((project, i) => (
+                  <Reveal key={project.slug} delay={i * 0.06}>
+                    <ProjectCard project={project} index={i + (featured ? 1 : 0)} />
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
