@@ -1,133 +1,147 @@
 # Informations légales bloquantes
 
 **Date** : 15 juillet 2026  
-**Objectif** : Lister toutes les informations manquantes qui DOIVENT être fournies avant le lancement commercial
+**Objectif** : Lister toutes les informations manquantes qui DOIVENT être fournies avant le lancement commercial de chaque projet.
+
+Ce document est **interne**. Les informations listées ici ne doivent JAMAIS apparaître publiquement sur le site avec des mentions "à compléter".
 
 ---
 
-## ⚠️ IMPORTANT
+## A. Informations communes au studio
 
-Ce document est **interne**. Les informations listées ici ne doivent **JAMAIS** apparaître publiquement sur le site avec des mentions "à compléter" ou "[manquant]".
+Configuration à compléter dans `src/config/legal.ts` selon le statut retenu.
 
-Les pages légales publiques sont rédigées pour fonctionner **sans ces informations** en phase pré-commerciale, mais certaines informations deviennent **obligatoires** dès qu'il y a :
-- Une activité commerciale (vente, achats in-app, etc.)
-- Une société enregistrée
-- Une obligation légale spécifique
+### Si passage en `sole-trader` (entrepreneur individuel / micro-entrepreneur)
+- [ ] `LEGAL_IDENTITY.legalName` — Nom et prénom du fondateur
+- [ ] `LEGAL_IDENTITY.postalAddress` — Adresse professionnelle
+- [ ] `LEGAL_IDENTITY.siren` — Numéro SIREN
+- [ ] `LEGAL_IDENTITY.siret` — Numéro SIRET
+- [ ] `LEGAL_IDENTITY.rneRegistration` — Inscription RNE
+- [ ] `LEGAL_IDENTITY.publicationDirector` — Nom du directeur de publication
 
----
-
-## 1. Identité légale de l'éditeur
-
-### Si vous restez en "individual-non-professional"
-✅ Aucune information supplémentaire requise pour le moment
-
-### Si vous passez en "sole-trader" (entrepreneur individuel / micro-entrepreneur)
-Vous DEVEZ fournir dans `src/config/legal.ts` :
-
-- [ ] **`legalName`** : Votre nom complet (prénom + nom)
-- [ ] **`postalAddress`** : Adresse professionnelle ou de domiciliation
-- [ ] **`siren`** : Numéro SIREN (9 chiffres)
-- [ ] **`siret`** : Numéro SIRET (14 chiffres)
-- [ ] **`rneRegistration`** : Inscription au Registre national des entreprises (ex: "Inscrit au RNE le [date]")
-- [ ] **`publicationDirector`** : Votre nom complet
-- [ ] **`phone`** (optionnel sauf si requis) : Téléphone professionnel
-
-### Si vous créez une société (SARL, SAS, etc.)
-Vous DEVEZ fournir en plus :
-
-- [ ] **`legalForm`** : Forme juridique exacte (ex: "SARL", "SAS")
-- [ ] **`tradingName`** : Si différent de la raison sociale
-- [ ] **`rcsRegistration`** : Inscription RCS (ex: "RCS Paris B 123 456 789")
-- [ ] **`vatNumber`** : Numéro de TVA intracommunautaire (si applicable)
+### Si création de société
+Tous les points ci-dessus PLUS :
+- [ ] `LEGAL_IDENTITY.legalForm` — Forme juridique
+- [ ] `LEGAL_IDENTITY.rcsRegistration` — Inscription RCS
+- [ ] `LEGAL_IDENTITY.vatNumber` — TVA intracommunautaire si applicable
 
 ---
 
-## 2. Politique de confidentialité - Chain
+## B. CHAIN
 
-### Informations techniques Supabase
-- [ ] **Localisation de la base de données** : Est-elle hébergée dans l'UE ou hors UE ?
-- [ ] **Offre Supabase utilisée** : Gratuite, Pro, Enterprise ? (impacte la durée de rétention des logs)
-- [ ] **Row Level Security** : Est-elle réellement activée et testée ?
+### Backend / hébergement
+- [ ] **Localisation Supabase** — La base de données Chain est-elle hébergée dans l&apos;UE ou hors UE ? Impact direct sur les transferts hors EEE dans la politique.
+- [ ] **Offre Supabase utilisée** — Gratuite / Pro / Enterprise (impacte la rétention des logs).
+- [ ] **Row Level Security** — Réellement activée et testée sur toutes les tables ?
 
-### Fonctionnalités Chain réellement implémentées
-Cocher uniquement ce qui est **actuellement fonctionnel** dans la version publique :
-
-- [ ] Liste d'amis
-- [ ] Codes de salon privés
+### Fonctionnalités à confirmer dans le build de sortie
+Pour chaque item ci-dessous : **cocher UNIQUEMENT si présent** dans le build de sortie publique.
+- [ ] Liste d&apos;amis
+- [ ] Chat / messagerie
+- [ ] Profils publics
 - [ ] Liens de parrainage
-- [ ] Profils publics partagés
-- [ ] Abonnement Premium
-- [ ] Achats intégrés (cœurs, malus, cosmétiques)
-- [ ] Chat ou messages
-- [ ] Signalement de joueurs
-- [ ] Blocage de joueurs
+- [ ] Codes de salon privés
+- [ ] Signalements / modération
+- [ ] Blocages de joueurs
+- [ ] Abonnement Premium (si activé, mettre à jour `products.ts.hasSubscription`)
+- [ ] Achats intégrés (si activés, `hasInAppPurchases: true`)
+- [ ] Publicité (si SDK ajouté, `hasAdvertising: true` + mapping AdMob à ajouter)
 
-### Durées de conservation
-- [ ] **Durée de conservation des reçus d'achat** : 10 ans (obligation comptable) ? À confirmer avec comptable
-- [ ] **Durée de conservation des données après suppression de compte** : Confirmer ce qui subsiste réellement et combien de temps
+### Suppression de compte
+- [ ] **Fonction in-app** — Existe-t-elle réellement ? Si oui, chemin exact dans l&apos;app. Mettre à jour `products.ts.hasInAppDeletion` + `inAppDeletionPath`.
+- [ ] **Mécanisme technique** — La suppression est-elle réellement immédiate et complète ? Quelles données subsistent (sauvegardes, logs, obligations comptables) ?
 
-### Âge et mineurs
-- [ ] **Âge minimum recommandé** : À définir selon la classification IARC et le contenu du jeu
-- [ ] **Politique vis-à-vis des mineurs** : Chain est-il destiné aux enfants ? Nécessite-t-il consentement parental ? À aligner avec Play Console
+### Google Play Install Referrer
+- [ ] Confirmer si implémenté dans le build Android actuel
+- [ ] Si oui, ajouter à la déclaration Play Console
 
----
-
-## 3. Suppression de compte Chain
-
-### Dans l'application
-- [ ] **Vérifier si la fonction existe** : Y a-t-il un bouton "Supprimer mon compte" dans l'app Chain ?
-- [ ] **Chemin dans l'app** : Si oui, quel est le chemin exact ? (ex: "Profil → Centre légal → Supprimer mon compte")
-- [ ] **Mécanisme technique** : La suppression est-elle réellement immédiate et complète ?
-
-### Via le web
-- [ ] **Formulaire web** : Créer un formulaire sur `/suppression-compte` permettant de demander la suppression sans l'app
+### Rétention
+- [ ] Confirmer avec expert-comptable la durée obligatoire des reçus d&apos;achat (potentiellement 10 ans)
 
 ---
 
-## 4. Conditions d'utilisation
+## C. KNOWOUT
 
-- [ ] **Droit applicable** : Droit français ? Autre ? (généralement le droit du pays où l'éditeur est établi)
-- [ ] **Juridiction compétente** : Tribunaux français ? Préciser lesquels ?
+Projet en développement — **rien n&apos;est publiquement actif à ce jour**.
+
+Ne pas remplir de politique de confidentialité détaillée tant que ces éléments ne sont pas décidés :
+
+- [ ] Existence ou non d&apos;un compte utilisateur
+- [ ] Système de scores et classements
+- [ ] Multijoueur (Solo / Duel / Battle Royale / Privé — lesquels sont retenus ?)
+- [ ] Serveur ou peer-to-peer pour le multijoueur ?
+- [ ] Achats intégrés
+- [ ] Publicités
+- [ ] Signalements / modération
+- [ ] Prestataires backend (Supabase ? Firebase ? Autre ?)
+
+**Une fois ces choix arrêtés**, mettre à jour `src/config/products.ts.KNOWOUT` avec les vraies données.
 
 ---
 
-## 5. Transferts hors Espace Économique Européen
+## D. JEU MUSICAL (nom en cours)
 
-Pour chaque prestataire international, obtenir :
+Projet en développement — **nom définitif non choisi**.
 
-- [ ] **Resend** : Documentation sur les garanties RGPD (clauses contractuelles types, etc.)
-- [ ] **Cloudflare** : Documentation sur les garanties RGPD
-- [ ] **Vercel** : Documentation sur les garanties RGPD et localisation des données
-- [ ] **Supabase** : Confirmer localisation et garanties RGPD
-- [ ] **Google Play** : S'appuyer sur la politique Google (déjà publique)
+### Nom
+- [ ] Nom définitif du projet (jusque-là, garder `Jeu musical` comme nom d&apos;affichage temporaire dans `products.ts.MUSIC_GAME.displayName`)
+
+### Vérifications techniques et légales
+- [ ] Sources musicales utilisées (paroles, extraits, catalogues) — sous quelle licence ?
+- [ ] API externes (Spotify Web API, Deezer, YouTube Data API, MusicBrainz…)
+- [ ] Contenus soumis par l&apos;utilisateur (mots, propositions, historique)
+- [ ] Compte utilisateur
+- [ ] Historique d&apos;écoute
+- [ ] Achats / abonnement
+- [ ] Publicité
+
+⚠️ **Attention licensing** : ne jamais publier de paroles, mélodies ou extraits musicaux sans licence vérifiée.
 
 ---
 
-## 6. Autres
-
-### Hébergeur
-- [ ] **Vérifier les coordonnées de Vercel** : Les coordonnées dans `HOSTING` sont-elles toujours exactes ? Consulter https://vercel.com/legal
-
-### Pièces jointes formulaire contact
-- [ ] **Implémentation** : Les pièces jointes sont-elles implémentées ? Si oui, où sont-elles stockées et combien de temps ?
+## E. Site Nosfac Studios
 
 ### Analytics
-- [ ] **Si analytics est activé** : Quel outil ? Quelles données ? Consentement requis ? Cookie banner à ajouter ?
+- [ ] **Si analytics est activé plus tard** — quel outil ? Quelles données ? Cookie banner nécessaire ?
+- [ ] Documentation à ajouter dans `/legal/cookies` avant activation
+
+### Formulaire de contact
+- [ ] **Pièces jointes** — Si implémentées, où sont-elles stockées et pour combien de temps ?
+
+### Hébergeur
+- [ ] **Coordonnées Vercel** — Vérifier annuellement sur https://vercel.com/legal
 
 ---
 
-## 📋 Checklist avant lancement commercial
+## F. Google Play — Éléments à vérifier avant publication
 
-Avant de lancer Chain commercialement ou d'enregistrer une entreprise :
+- [ ] Politique de confidentialité **publique** et **accessible sans compte**
+- [ ] URL directe vers ancre `#chain` fonctionnelle
+- [ ] URL `/suppression-compte#chain` fonctionnelle
+- [ ] Formulaire "Sécurité des données" cohérent avec `products.ts.CHAIN`
+- [ ] Classification IARC compatible avec la politique mineurs
+- [ ] Permissions Android déclarées
 
-1. ✅ Compléter `src/config/legal.ts` avec les informations d'identité légale requises
-2. ✅ Définir la politique vis-à-vis des mineurs
-3. ✅ Vérifier les fonctionnalités Chain réellement implémentées et mettre à jour la politique de confidentialité
-4. ✅ S'assurer que le mécanisme de suppression de compte fonctionne (dans l'app et/ou via le web)
-5. ✅ Obtenir les documents de conformité RGPD des prestataires
-6. ✅ Mettre à jour les pages légales avec les vraies informations
-7. ✅ Remplir correctement la section "Sécurité des données" dans Google Play Console
-8. ✅ Exécuter `npm run legal:check` et corriger toutes les erreurs
+---
+
+## G. Apple App Store — Éléments à vérifier avant publication
+
+- [ ] App Privacy filled cohérent avec `products.ts.CHAIN`
+- [ ] Age rating
+- [ ] Account deletion : requis depuis iOS 5 juin 2022 — méthode web `/suppression-compte#chain` suffisante
+- [ ] EULA custom si différent de la version standard Apple
+
+---
+
+## H. Transferts hors Espace économique européen
+
+Pour chaque prestataire utilisé, obtenir :
+
+- [ ] **Vercel** — DPA + garanties (clauses contractuelles types)
+- [ ] **Supabase** — DPA + localisation projet + garanties
+- [ ] **Resend** — DPA (si formulaire actif)
+- [ ] **Cloudflare** — DPA (si Turnstile actif)
+- [ ] **Google Play** — Se référer à Google Cloud DPA
 
 ---
 

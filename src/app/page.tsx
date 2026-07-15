@@ -1,352 +1,357 @@
 import NextLink from "next/link";
+import Image from "next/image";
 import { getPublicProjects, getFeaturedProject } from "@/lib/content/projects";
 import { getPublicArticles } from "@/lib/content/articles";
 import { SITE } from "@/config/site";
-import { HeroShowcase } from "@/components/content/hero-showcase";
-import { ProjectCard } from "@/components/content/project-card";
-import { ArticleCard } from "@/components/content/article-card";
-import { ProjectStatusBadge } from "@/components/ui/project-status";
-import { Reveal } from "@/components/motion/reveal";
-import { AnimatedHeading } from "@/components/motion/animated-heading";
-import { Marquee } from "@/components/layout/marquee";
+import { STATUS_LABELS } from "@/domain/project";
 
-/** Editorial vertical rule — used to separate side info blocks. */
-function Rule() {
-  return <span className="mx-3 text-foreground-subtle/40" aria-hidden>·</span>;
-}
-
+/**
+ * Home page — Composition "Journal éditorial".
+ *
+ * Objectifs anti-cliché :
+ *  - Pas de hero géant sur plusieurs lignes.
+ *  - Pas de mot italique décoratif.
+ *  - Pas de bouton pilule turquoise.
+ *  - Pas de mockup téléphone flottant.
+ *  - Presque monochrome. L'accent n'apparaît qu'une seule fois par section.
+ *  - Layout en colonnes fines avec filets, pensé comme la Une d'un magazine.
+ */
 export default function HomePage() {
   const projects = getPublicProjects();
   const featured = getFeaturedProject() ?? projects[0];
-  const secondary = projects.filter((project) => project.slug !== featured?.slug);
-  const articles = getPublicArticles().slice(0, 3);
+  const others = projects.filter((p) => p.slug !== featured?.slug);
+  const articles = getPublicArticles().slice(0, 2);
 
-  const year = new Date().getFullYear();
+  const currentDate = new Intl.DateTimeFormat("fr-FR", {
+    year: "numeric",
+    month: "long",
+  }).format(new Date());
 
   return (
-    <div className="relative">
-      {/* ============================================================
-          HERO — Editorial layout, asymmetric, oversized display type
-      ============================================================ */}
-      <section
-        className="relative overflow-hidden"
-        aria-labelledby="hero-heading"
-      >
-        {/* Background accent halo */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-40 right-[-10%] h-[600px] w-[600px] rounded-full bg-accent-500/10 blur-[120px]"
-        />
-
-        <div className="mx-auto max-w-[1400px] px-5 pt-16 pb-16 md:px-8 md:pt-24 md:pb-20">
-          {/* Meta row above hero */}
-          <div className="mb-8 flex items-center gap-2 font-mono text-[11px] tracking-wider text-foreground-subtle uppercase md:mb-12">
-            <span className="relative flex size-1.5">
-              <span className="absolute inset-0 rounded-full bg-accent-500" />
-              <span className="absolute inset-0 animate-ping rounded-full bg-accent-500 opacity-60" />
-            </span>
-            <span>Studio · {year}</span>
-            <Rule />
-            <span>Basé en France</span>
-            <Rule />
-            <span className="hidden sm:inline">Indépendant</span>
+    <div>
+      {/* =========================================================
+          MASTHEAD — Comme la Une d'un journal.
+          Date + numéro d'édition + issue. Titre modéré.
+      ========================================================= */}
+      <section className="border-b border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 pt-10 pb-16 md:px-8 md:pt-14 md:pb-24">
+          {/* Meta line — sober, no dots pulsating */}
+          <div className="flex items-baseline justify-between gap-6 text-[12px] text-foreground-subtle">
+            <span className="tabular">{currentDate}</span>
+            <span className="hidden sm:inline">Studio indépendant · France</span>
+            <span className="tabular">N° {String(projects.length).padStart(2, "0")}</span>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-12 md:items-end">
+          <div className="mt-10 grid gap-10 md:grid-cols-12 md:gap-8">
             <div className="md:col-span-8">
-              <AnimatedHeading
-                as="h1"
-                className="text-[clamp(2.75rem,7vw,6rem)] font-semibold leading-[0.95] tracking-[-0.03em]"
-              >
-                Des jeux simples à comprendre,
-              </AnimatedHeading>
-              <h1
-                id="hero-heading"
-                className="mt-1 text-[clamp(2.75rem,7vw,6rem)] font-semibold leading-[0.95] tracking-[-0.03em]"
-                aria-hidden
-              >
-                <span className="font-display italic text-accent-500">difficiles</span> à lâcher.
+              <h1 className="text-[clamp(2rem,3vw+1rem,3.5rem)] leading-[1.05] tracking-[-0.02em] font-medium">
+                Nosfac Studios construit des jeux à règles courtes,
+                <br />
+                <span className="text-foreground-muted">testés en jeu avant d&apos;être finis.</span>
               </h1>
 
-              <p className="mt-8 max-w-xl text-base leading-relaxed text-foreground-muted md:text-lg">
-                Nosfac Studios est un studio indépendant de jeux et de logiciels. Nous construisons
-                patiemment, testons en jeu, et laissons parler nos projets.
+              <p className="mt-8 max-w-xl text-[17px] leading-[1.6] text-foreground-muted">
+                Studio indépendant basé en France. Trois projets en cours&nbsp;:
+                un jeu mobile de chaînes de mots, un jeu de connaissances multijoueur,
+                et un jeu musical dont le nom n&apos;est pas encore choisi.
               </p>
 
-              <div className="mt-10 flex flex-wrap items-center gap-3">
+              <div className="mt-10 flex items-baseline gap-8">
                 <NextLink
                   href="/projects"
-                  className="group inline-flex h-12 items-center gap-2.5 rounded-full bg-accent-500 px-6 text-[14px] font-semibold text-ink-950 transition-all duration-(--duration-standard) ease-(--ease-expressive) hover:bg-accent-400 hover:shadow-[0_10px_40px_-8px_var(--accent-500)]"
+                  className="inline-flex items-baseline gap-2 border-b border-foreground pb-0.5 text-[15px] font-medium hover:text-accent-600 hover:border-accent-600 transition-colors duration-(--duration-fast)"
                   data-testid="hero-cta-projects"
                 >
-                  <span>Découvrir les projets</span>
-                  <span
-                    aria-hidden
-                    className="translate-x-0 transition-transform duration-(--duration-standard) ease-(--ease-expressive) group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
+                  Voir les projets
+                  <span aria-hidden className="text-[13px]">→</span>
                 </NextLink>
                 <NextLink
                   href="/about"
-                  className="inline-flex h-12 items-center gap-2 rounded-full px-4 text-[14px] font-medium text-foreground-muted transition-colors duration-(--duration-fast) hover:text-foreground link-editorial"
-                  data-testid="hero-cta-about"
+                  className="text-[15px] text-foreground-muted hover:text-foreground link-underline"
                 >
                   À propos du studio
                 </NextLink>
               </div>
             </div>
 
-            {/* Featured project side card */}
-            {featured && (
-              <div className="md:col-span-4">
-                <div className="rounded-2xl border border-border-subtle bg-surface-elevated/40 p-5 backdrop-blur">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="font-mono text-[10px] tracking-widest text-foreground-subtle uppercase">
-                      Projet phare
+            {/* Right column — table of contents style */}
+            <aside className="md:col-span-4 md:pl-6 md:border-l border-border-subtle">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+                Dans ce numéro
+              </p>
+              <ol className="mt-4 space-y-3 text-[14px]">
+                {projects.map((project, i) => (
+                  <li key={project.slug} className="flex items-baseline gap-3">
+                    <span className="tabular text-foreground-subtle">
+                      {String(i + 1).padStart(2, "0")}
                     </span>
-                    <ProjectStatusBadge status={featured.status} />
+                    <div className="flex-1">
+                      <NextLink
+                        href={`/projects/${project.slug}`}
+                        className="link-underline font-medium"
+                      >
+                        {project.name}
+                      </NextLink>
+                      <span className="ml-2 text-foreground-subtle">
+                        · {STATUS_LABELS[project.status].label.toLowerCase()}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          FEATURED PROJECT — Article éditorial dédié.
+          Composition asymétrique, capture réelle intégrée.
+      ========================================================= */}
+      {featured && (
+        <section className="border-b border-border-subtle">
+          <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+            <div className="mb-8 flex items-baseline justify-between border-b border-border-subtle pb-4">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+                Projet principal
+              </p>
+              <span className="tabular text-[11px] text-foreground-subtle">01 / {String(projects.length).padStart(2, "0")}</span>
+            </div>
+
+            <div className="grid gap-10 md:grid-cols-12 md:gap-10">
+              <div className="md:col-span-7">
+                {featured.heroMedia?.type === "image" && featured.heroMedia.src && (
+                  <div className="relative overflow-hidden bg-surface-elevated">
+                    <Image
+                      src={featured.heroMedia.src}
+                      alt={featured.heroMedia.alt}
+                      width={featured.heroMedia.width ?? 1200}
+                      height={featured.heroMedia.height ?? 800}
+                      className="h-auto w-full"
+                      priority
+                    />
                   </div>
-                  <div className="mt-4 -mx-1 -mt-1 overflow-hidden rounded-xl">
-                    <HeroShowcase media={featured.heroMedia} accentHex={featured.accent.hex} priority />
-                  </div>
-                  <div className="mt-5 flex items-baseline justify-between gap-4">
-                    <h2 className="text-2xl font-semibold tracking-tight">
-                      {featured.name}
-                      {featured.provisionalName && (
-                        <span className="ml-1.5 font-display italic text-sm font-normal text-foreground-subtle">
-                          (nom provisoire)
-                        </span>
-                      )}
-                    </h2>
-                  </div>
-                  <p className="mt-2 text-sm leading-relaxed text-foreground-muted">
-                    {featured.summary}
-                  </p>
+                )}
+                {(!featured.heroMedia || featured.heroMedia.type !== "image" || !featured.heroMedia.src) && (
+                  <div className="aspect-[4/3] bg-surface-elevated" aria-hidden />
+                )}
+              </div>
+
+              <div className="md:col-span-5 md:pt-4">
+                <p className="text-[12px] text-foreground-subtle tabular">
+                  {STATUS_LABELS[featured.status].label}
+                  {featured.platforms.length > 0 && (
+                    <> · {featured.platforms.map((p) => p.label).join(", ")}</>
+                  )}
+                </p>
+                <h2 className="mt-3 text-[32px] leading-[1.1] tracking-[-0.02em] font-medium md:text-[40px]">
+                  {featured.name}
+                </h2>
+                <p className="mt-5 text-[17px] leading-[1.6] text-foreground-muted max-w-md">
+                  {featured.summary}
+                </p>
+
+                <div className="mt-8 border-t border-border-subtle pt-5">
                   <NextLink
                     href={`/projects/${featured.slug}`}
-                    className="group mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent-500"
+                    className="inline-flex items-baseline gap-2 text-[15px] font-medium link-underline"
                     data-testid="hero-featured-link"
                   >
-                    <span className="link-editorial">Voir le projet</span>
-                    <span
-                      aria-hidden
-                      className="translate-x-0 transition-transform duration-(--duration-standard) ease-(--ease-expressive) group-hover:translate-x-1"
-                    >
-                      →
-                    </span>
+                    Lire la fiche projet
+                    <span aria-hidden>→</span>
                   </NextLink>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================
-          MARQUEE — What we build (subtle horizontal ticker)
-      ============================================================ */}
-      <section className="border-y border-border-subtle bg-surface-sunken/30 py-5">
-        <Marquee ariaLabel="Ce que nous construisons">
-          {[
-            "Jeux mobiles",
-            "Applications",
-            "Expérimentations",
-            "Design system",
-            "Multijoueur",
-            "Interfaces soignées",
-            "Prototypes rapides",
-            "Itération continue",
-          ].map((word, i) => (
-            <div
-              key={`${word}-${i}`}
-              className="flex items-center gap-6 font-mono text-[12px] tracking-widest text-foreground-muted uppercase whitespace-nowrap"
-            >
-              <span>{word}</span>
-              <span className="text-accent-500">◆</span>
             </div>
-          ))}
-        </Marquee>
-      </section>
-
-      {/* ============================================================
-          PROJECTS — Grid with strong hierarchy
-      ============================================================ */}
-      {secondary.length > 0 && (
-        <section className="mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28" id="projects">
-          <Reveal>
-            <header className="mb-10 grid gap-6 md:grid-cols-12 md:items-end md:mb-14">
-              <div className="md:col-span-8">
-                <span className="font-mono text-[11px] tracking-widest text-foreground-subtle uppercase">
-                  Catalogue · {String(projects.length).padStart(2, "0")}
-                </span>
-                <h2 className="mt-3 text-4xl font-semibold leading-[1.05] tracking-[-0.02em] md:text-5xl">
-                  Ce que nous <span className="font-display italic text-accent-500">construisons</span>
-                </h2>
-              </div>
-              <div className="md:col-span-4 md:text-right">
-                <NextLink
-                  href="/projects"
-                  className="group inline-flex items-center gap-2 text-sm font-medium text-foreground link-editorial"
-                >
-                  <span>Tous les projets</span>
-                  <span
-                    aria-hidden
-                    className="transition-transform duration-(--duration-standard) ease-(--ease-expressive) group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </NextLink>
-              </div>
-            </header>
-          </Reveal>
-
-          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-            {secondary.map((project, i) => (
-              <Reveal key={project.slug} delay={i * 0.08}>
-                <ProjectCard project={project} index={i} />
-              </Reveal>
-            ))}
           </div>
         </section>
       )}
 
-      {/* ============================================================
-          APPROACH — Numbered principles, editorial column layout
-      ============================================================ */}
-      <section className="border-y border-border-subtle bg-surface-sunken/20">
-        <div className="mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
-          <Reveal>
-            <header className="mb-14 max-w-3xl">
-              <span className="font-mono text-[11px] tracking-widest text-foreground-subtle uppercase">
-                Méthode
-              </span>
-              <h2 className="mt-3 text-4xl font-semibold leading-[1.05] tracking-[-0.02em] md:text-5xl">
-                Une règle simple, testée puis <span className="font-display italic text-accent-500">approfondie</span>.
-              </h2>
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-foreground-muted md:text-lg">
-                Nous préférons peu de projets, menés loin, plutôt qu&apos;une longue liste de démos.
-                Chaque décision est vérifiée en jeu.
+      {/* =========================================================
+          OTHER PROJECTS — Sommaire dense, presque textuel.
+          Deux colonnes, pas de mockups répétés.
+      ========================================================= */}
+      {others.length > 0 && (
+        <section className="border-b border-border-subtle">
+          <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+            <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+                Autres projets
               </p>
-            </header>
-          </Reveal>
+              <span className="tabular text-[11px] text-foreground-subtle">
+                {String(others.length).padStart(2, "0")} en cours
+              </span>
+            </div>
 
-          <div className="grid gap-10 md:grid-cols-3 md:gap-12">
-            {[
-              {
-                num: "01",
-                title: "Concevoir",
-                body:
-                  "Chaque projet part d'une règle ou d'une mécanique lisible en quelques secondes. Le reste se construit autour.",
-              },
-              {
-                num: "02",
-                title: "Tester",
-                body:
-                  "Les intuitions se vérifient en jeu, sur les vrais appareils, avec des joueurs réels — pas seulement sur le papier.",
-              },
-              {
-                num: "03",
-                title: "Améliorer",
-                body:
-                  "Le journal de développement documente les itérations réelles, les décisions difficiles et les retours pris en compte.",
-              },
-            ].map((step, i) => (
-              <Reveal key={step.num} delay={i * 0.1}>
-                <div className="group relative flex flex-col gap-3 border-t border-border-strong/40 pt-6">
-                  <span className="font-mono text-[13px] tracking-wider text-accent-500">{step.num}</span>
-                  <h3 className="text-2xl font-semibold tracking-tight md:text-3xl">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-foreground-muted md:text-base">
-                    {step.body}
+            <div className="grid gap-x-10 gap-y-14 md:grid-cols-2">
+              {others.map((project, i) => (
+                <article key={project.slug} className="group">
+                  <p className="tabular text-[11px] text-foreground-subtle">
+                    {String(i + 2).padStart(2, "0")} · {STATUS_LABELS[project.status].label}
+                    {project.platforms.length > 0 && (
+                      <> · {project.platforms.map((p) => p.label).join(", ")}</>
+                    )}
                   </p>
+                  <h3 className="mt-3 text-[26px] leading-[1.1] tracking-[-0.015em] font-medium">
+                    <NextLink
+                      href={`/projects/${project.slug}`}
+                      className="hover:text-accent-600 transition-colors duration-(--duration-fast)"
+                    >
+                      {project.name}
+                    </NextLink>
+                    {project.provisionalName && (
+                      <span className="ml-2 text-[15px] font-normal text-foreground-subtle">
+                        (nom provisoire)
+                      </span>
+                    )}
+                  </h3>
+                  <p className="mt-3 text-[15px] leading-[1.6] text-foreground-muted max-w-md">
+                    {project.summary}
+                  </p>
+                  <NextLink
+                    href={`/projects/${project.slug}`}
+                    className="mt-4 inline-flex items-baseline gap-1.5 text-[14px] link-underline"
+                  >
+                    Fiche projet
+                    <span aria-hidden>→</span>
+                  </NextLink>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================
+          APPROACH — 4 lignes courtes, format éditorial.
+          Pas de numérotage 01/02/03 tape-à-l'oeil.
+      ========================================================= */}
+      <section className="border-b border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="mb-10 border-b border-border-subtle pb-4">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+              Approche
+            </p>
+          </div>
+
+          <div className="grid gap-10 md:grid-cols-12 md:gap-8">
+            <h2 className="md:col-span-5 text-[32px] leading-[1.1] tracking-[-0.02em] font-medium md:text-[40px]">
+              Peu de projets, menés jusqu&apos;au bout.
+            </h2>
+
+            <dl className="md:col-span-7 divide-y divide-border-subtle">
+              {[
+                {
+                  term: "Règles simples d'abord",
+                  desc: "Chaque projet part d'une règle lisible en quelques secondes. Le reste se construit autour, sans surcharge inutile.",
+                },
+                {
+                  term: "Vérifié en jeu",
+                  desc: "Les décisions sont testées sur les vrais appareils, avec des joueurs réels. Le journal de développement documente les itérations.",
+                },
+                {
+                  term: "Sans promesse invérifiable",
+                  desc: "Nous n'annonçons ni date de sortie ni fonctionnalité tant qu'elle n'est pas stabilisée. Les statuts affichés sont les vrais statuts.",
+                },
+              ].map((item) => (
+                <div key={item.term} className="grid gap-2 py-5 md:grid-cols-4 md:gap-6">
+                  <dt className="text-[15px] font-medium md:col-span-1">{item.term}</dt>
+                  <dd className="text-[15px] leading-[1.6] text-foreground-muted md:col-span-3">
+                    {item.desc}
+                  </dd>
                 </div>
-              </Reveal>
-            ))}
+              ))}
+            </dl>
           </div>
         </div>
       </section>
 
-      {/* ============================================================
-          JOURNAL — Only shown if we have real articles
-      ============================================================ */}
+      {/* =========================================================
+          JOURNAL — Only if real articles exist.
+      ========================================================= */}
       {articles.length > 0 && (
-        <section className="mx-auto max-w-[1400px] px-5 py-20 md:px-8 md:py-28">
-          <Reveal>
-            <header className="mb-10 grid gap-6 md:grid-cols-12 md:items-end md:mb-14">
-              <div className="md:col-span-8">
-                <span className="font-mono text-[11px] tracking-widest text-foreground-subtle uppercase">
-                  Journal
-                </span>
-                <h2 className="mt-3 text-4xl font-semibold leading-[1.05] tracking-[-0.02em] md:text-5xl">
-                  Notes et <span className="font-display italic text-accent-500">avancées</span>
-                </h2>
-              </div>
-              <div className="md:col-span-4 md:text-right">
-                <NextLink
-                  href="/journal"
-                  className="group inline-flex items-center gap-2 text-sm font-medium text-foreground link-editorial"
-                >
-                  <span>Tout le journal</span>
-                  <span
-                    aria-hidden
-                    className="transition-transform duration-(--duration-standard) group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
-                </NextLink>
-              </div>
-            </header>
-          </Reveal>
+        <section className="border-b border-border-subtle">
+          <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
+            <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+                Dernières notes
+              </p>
+              <NextLink
+                href="/journal"
+                className="text-[13px] text-foreground-muted link-underline"
+              >
+                Tout le journal
+              </NextLink>
+            </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {articles.map((article, i) => (
-              <Reveal key={article.frontmatter.slug} delay={i * 0.08}>
-                <ArticleCard article={article} />
-              </Reveal>
-            ))}
+            <ul className="divide-y divide-border-subtle">
+              {articles.map((article) => (
+                <li key={article.frontmatter.slug}>
+                  <NextLink
+                    href={`/journal/${article.frontmatter.slug}`}
+                    className="group grid gap-2 py-5 md:grid-cols-12 md:gap-6"
+                  >
+                    <time
+                      className="tabular text-[13px] text-foreground-subtle md:col-span-2"
+                      dateTime={article.frontmatter.publishedAt}
+                    >
+                      {new Intl.DateTimeFormat("fr-FR", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      }).format(new Date(article.frontmatter.publishedAt))}
+                    </time>
+                    <h3 className="text-[17px] font-medium md:col-span-6 group-hover:text-accent-600 transition-colors">
+                      {article.frontmatter.title}
+                    </h3>
+                    <p className="text-[15px] text-foreground-muted md:col-span-4">
+                      {article.frontmatter.summary}
+                    </p>
+                  </NextLink>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
       )}
 
-      {/* ============================================================
-          FINAL CTA — Editorial, oversized, minimal
-      ============================================================ */}
-      <section className="border-t border-border-subtle">
-        <div className="mx-auto max-w-[1400px] px-5 py-24 md:px-8 md:py-32">
-          <Reveal>
-            <div className="mx-auto flex max-w-3xl flex-col items-center gap-8 text-center">
-              <span className="font-mono text-[11px] tracking-widest text-foreground-subtle uppercase">
+      {/* =========================================================
+          COLOPHON — Contact simple, pas de CTA gigantesque.
+      ========================================================= */}
+      <section>
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
+          <div className="grid gap-8 md:grid-cols-12 md:gap-8">
+            <div className="md:col-span-5">
+              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
                 Contact
-              </span>
-              <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.02em] md:text-6xl">
-                Un projet, une question, une <span className="font-display italic text-accent-500">opportunité</span> ?
-              </h2>
-              <p className="max-w-md text-base leading-relaxed text-foreground-muted md:text-lg">
-                Nous lisons chaque message. Bug, presse, partenariat, collaboration — écrivez-nous.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-3">
+              <h2 className="mt-3 text-[28px] leading-[1.15] tracking-[-0.015em] font-medium md:text-[32px]">
+                Presse, partenariats, retours de test&nbsp;: écrivez-nous.
+              </h2>
+            </div>
+            <div className="md:col-span-7 md:pl-6 md:border-l border-border-subtle md:pt-1">
+              <p className="text-[15px] leading-[1.6] text-foreground-muted max-w-md">
+                Nous lisons chaque message. Aucun délai n&apos;est garanti, mais les demandes
+                sérieuses reçoivent toujours une réponse.
+              </p>
+              <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
                 <NextLink
                   href="/support/contact"
-                  className="group inline-flex h-12 items-center gap-2.5 rounded-full bg-accent-500 px-6 text-[14px] font-semibold text-ink-950 transition-all duration-(--duration-standard) ease-(--ease-expressive) hover:bg-accent-400 hover:shadow-[0_10px_40px_-8px_var(--accent-500)]"
+                  className="inline-flex items-baseline gap-2 border-b border-foreground pb-0.5 text-[15px] font-medium hover:text-accent-600 hover:border-accent-600 transition-colors"
                   data-testid="cta-contact"
                 >
-                  <span>Nous écrire</span>
-                  <span
-                    aria-hidden
-                    className="translate-x-0 transition-transform duration-(--duration-standard) ease-(--ease-expressive) group-hover:translate-x-1"
-                  >
-                    →
-                  </span>
+                  Formulaire de contact
+                  <span aria-hidden className="text-[13px]">→</span>
                 </NextLink>
                 <a
                   href={`mailto:${SITE.contactEmail}`}
-                  className="inline-flex h-12 items-center gap-2 rounded-full px-4 font-mono text-[13px] text-foreground-muted transition-colors duration-(--duration-fast) hover:text-foreground link-editorial"
+                  className="text-[14px] text-foreground-muted link-underline font-mono"
                 >
                   {SITE.contactEmail}
                 </a>
               </div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
     </div>

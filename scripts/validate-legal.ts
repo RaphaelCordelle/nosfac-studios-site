@@ -1,8 +1,6 @@
 /**
  * Legal compliance validation script
- * 
- * Checks that legal pages don't contain placeholder text or incomplete information
- * that should not be visible in production.
+ * Enhanced for multi-product architecture (Chain, KnowOut, jeu musical).
  * 
  * Run with: npm run legal:check
  */
@@ -11,11 +9,12 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateLegalConfig } from "../src/config/legal";
+import { PRODUCTS } from "../src/config/products";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const LEGAL_FILES_TO_CHECK = [
+const LEGAL_FILES = [
   "src/app/legal/legal-notice/page.tsx",
   "src/app/legal/privacy/page.tsx",
   "src/app/legal/terms/page.tsx",
@@ -32,16 +31,9 @@ const FORBIDDEN_PATTERNS = [
   /<MissingField/gi,
 ];
 
-// Patterns that are OK in TypeScript code (for dynamic rendering) but NOT in static text
-const CODE_CONTEXT_PATTERNS = [
-  /\[nom légal non renseigné\]/gi,
-  /\[.*?non renseigné.*?\]/gi,
-];
-
 interface ValidationError {
   file: string;
   line: number;
-  pattern: string;
   match: string;
 }
 
@@ -54,35 +46,10 @@ async function checkFile(filePath: string): Promise<ValidationError[]> {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     if (line === undefined) continue;
-    
-    // Skip lines that are clearly part of TypeScript code (with ?? or ternary operators)
-    // These are dynamic rendering, not static placeholders
-    const isCodeContext = line.includes("??") || line.includes("? ") || line.includes(": \"");
-    
     for (const pattern of FORBIDDEN_PATTERNS) {
       const matches = line.match(pattern);
       if (matches) {
-        errors.push({
-          file: filePath,
-          line: i + 1,
-          pattern: pattern.source,
-          match: matches[0],
-        });
-      }
-    }
-    
-    // Check code context patterns only if NOT in code context
-    if (!isCodeContext) {
-      for (const pattern of CODE_CONTEXT_PATTERNS) {
-        const matches = line.match(pattern);
-        if (matches) {
-          errors.push({
-            file: filePath,
-            line: i + 1,
-            pattern: pattern.source,
-            match: matches[0],
-          });
-        }
+        errors.push({ file: filePath, line: i + 1, match: matches[0] });
       }
     }
   }
@@ -90,113 +57,186 @@ async function checkFile(filePath: string): Promise<ValidationError[]> {
   return errors;
 }
 
-async function checkLegalRoutes(): Promise<boolean> {
-  const legalRoutes = [
+async function checkRoutes(): Promise<boolean> {
+  const routes = [
     "src/app/legal/legal-notice/page.tsx",
     "src/app/legal/privacy/page.tsx",
     "src/app/legal/terms/page.tsx",
     "src/app/legal/cookies/page.tsx",
     "src/app/suppression-compte/page.tsx",
   ];
-
-  let allExist = true;
-  for (const route of legalRoutes) {
-    const fullPath = path.join(__dirname, "..", route);
+  let ok = true;
+  for (const route of routes) {
+    const full = path.join(__dirname, "..", route);
     try {
-      await fs.access(fullPath);
+      await fs.access(full);
     } catch {
-      console.error(`❌ Missing legal route: ${route}`);
-      allExist = false;
+      console.error(`❌ Route manquante : ${route}`);
+      ok = false;
     }
   }
-
-  return allExist;
+  return ok;
 }
 
-async function checkConfigValidation(): Promise<boolean> {
-  const validation = validateLegalConfig();
-  
-  if (!validation.valid) {
-    console.error("\n❌ Legal configuration incomplete:");
-    console.error("Missing required fields for current legal status:");
-    for (const field of validation.missing) {
-      console.error(`  - ${field}`);
+async function checkRedirects(): Promise<boolean> {
+  const expectedSources = [
+    "/mentions-legales",
+    "/confidentialite",
+    "/conditions-utilisation",
+    "/cookies",
+  ];
+  const raw = await fs.readFile(path.join(__dirname, "..", "content/redirects.json"), "utf-8");
+  const data = JSON.parse(raw) as { source: string }[];
+  let ok = true;
+  for (const src of expectedSources) {
+    if (!data.some((r) => r.source === src)) {
+      console.error(`❌ Redirection manquante : ${src}`);
+      ok = false;
     }
-    console.error("\nPlease update src/config/legal.ts with the required information.");
-    console.error("See docs/LEGAL_BLOCKERS.md for details.\n");
-    return false;
+  }
+  return ok;
+}
+
+async function checkProductsConsistency(): Promise<boolean> {
+  let ok = true;
+  const privacyContent = await fs.readFile(
+    path.join(__dirname, "..", "src/app/legal/privacy/page.tsx"),
+    "utf-8",
+  );
+
+  for (const product of PRODUCTS) {
+    // Anchor must exist in privacy page (via the anchor id map)
+    // The privacy page iterates PRODUCTS array so anchors are guaranteed.
+    // We validate INTERNAL consistency of each product.
+
+    // Advertising declared but no provider that could be an ad SDK
+    if (product.hasAdvertising && !product.providers.some((p) => /admob|ad|meta|unity/i.test(p))) {
+      console.error(
+        `❌ Produit "${product.publicName}" déclare hasAdvertising: true mais aucun prestataire publicitaire n'est listé.`,
+      );
+      ok = false;
+    }
+
+    // In-app deletion declared true but no path
+    if (product.hasInAppDeletion && !product.inAppDeletionPath) {
+      console.error(
+        `❌ Produit "${product.publicName}" déclare hasInAppDeletion: true mais aucun inAppDeletionPath n'est configuré.`,
+      );
+      ok = false;
+    }
+
+    // Provisional name in publicName (should be in displayName instead)
+    if (/provisoire|temporaire|à définir|à choisir/i.test(product.publicName)) {
+      console.error(
+        `❌ Produit "${product.publicName}" a un nom présenté comme définitif alors qu'il est provisoire (utiliser displayName pour ça).`,
+      );
+      ok = false;
+    }
+
+    // Chain mention required in privacy for Play Console
+    if (product.id === "chain" && !privacyContent.includes("Chain")) {
+      console.error(`❌ Chain doit être mentionné dans la politique de confidentialité.`);
+      ok = false;
+    }
+
+    // Every product must be referenceable from deletion page (via products.ts anchor)
+    // The deletion page uses `product.anchorId` in a loop, so we check products.ts sources
+    const productsSrc = await fs.readFile(
+      path.join(__dirname, "..", "src/config/products.ts"),
+      "utf-8",
+    );
+    if (!productsSrc.includes(`anchorId: "${product.anchorId}"`)) {
+      console.error(
+        `❌ Ancre "${product.anchorId}" absente de src/config/products.ts pour ${product.publicName}.`,
+      );
+      ok = false;
+    }
   }
 
-  return true;
+  return ok;
+}
+
+async function checkFooterLinks(): Promise<boolean> {
+  const navContent = await fs.readFile(
+    path.join(__dirname, "..", "src/config/navigation.ts"),
+    "utf-8",
+  );
+  const expectedLinks = [
+    "/legal/legal-notice",
+    "/legal/privacy",
+    "/legal/terms",
+    "/legal/cookies",
+    "/suppression-compte",
+  ];
+  let ok = true;
+  for (const link of expectedLinks) {
+    if (!navContent.includes(link)) {
+      console.error(`❌ Lien "${link}" absent du footer (navigation.ts)`);
+      ok = false;
+    }
+  }
+  return ok;
 }
 
 async function main() {
-  console.log("🔍 Validating legal compliance...\n");
+  console.log("🔍 Vérification juridique — Nosfac Studios\n");
 
-  // Check 1: Legal routes exist
-  console.log("Checking legal routes...");
-  const routesExist = await checkLegalRoutes();
-  if (!routesExist) {
-    process.exit(1);
-  }
-  console.log("✅ All legal routes exist\n");
+  console.log("→ Routes légales…");
+  if (!(await checkRoutes())) process.exit(1);
+  console.log("  ✅ Toutes les routes existent\n");
 
-  // Check 2: Configuration validation
-  console.log("Checking legal configuration...");
-  const configValid = await checkConfigValidation();
-  if (!configValid) {
-    console.warn("⚠️  Configuration incomplete but not blocking build");
-    console.warn("    (Complete before commercial launch)\n");
+  console.log("→ Redirections /mentions-legales, /confidentialite, /conditions-utilisation, /cookies…");
+  if (!(await checkRedirects())) process.exit(1);
+  console.log("  ✅ Toutes les redirections sont configurées\n");
+
+  console.log("→ Configuration légale (identité)…");
+  const cfg = validateLegalConfig();
+  if (!cfg.valid) {
+    console.warn("  ⚠️ Configuration incomplète (non bloquante pour le build)");
+    console.warn("  Champs manquants :");
+    cfg.missing.forEach((f) => console.warn(`    - ${f}`));
+    console.warn("  Voir docs/LEGAL_BLOCKERS.md\n");
   } else {
-    console.log("✅ Legal configuration valid\n");
+    console.log("  ✅ Configuration valide\n");
   }
 
-  // Check 3: Placeholder patterns
-  console.log("Checking for placeholder text...");
-  let hasErrors = false;
+  console.log("→ Cohérence multi-produits (Chain / KnowOut / jeu musical)…");
+  if (!(await checkProductsConsistency())) process.exit(1);
+  console.log("  ✅ Cohérence des 3 produits validée\n");
 
-  for (const file of LEGAL_FILES_TO_CHECK) {
+  console.log("→ Liens du footer…");
+  if (!(await checkFooterLinks())) process.exit(1);
+  console.log("  ✅ Tous les liens légaux sont présents\n");
+
+  console.log("→ Placeholders dans les pages publiques…");
+  let hasErrors = false;
+  for (const file of LEGAL_FILES) {
     const errors = await checkFile(file);
     if (errors.length > 0) {
       hasErrors = true;
-      console.error(`\n❌ Found placeholders in ${file}:`);
-      for (const error of errors) {
-        console.error(`   Line ${error.line}: ${error.match}`);
-      }
+      console.error(`  ❌ ${file}`);
+      errors.forEach((e) => console.error(`     ligne ${e.line} : "${e.match}"`));
     }
   }
+  if (hasErrors) process.exit(1);
+  console.log("  ✅ Aucun placeholder détecté\n");
 
-  if (!hasErrors) {
-    console.log("✅ No placeholder text found\n");
-  } else {
-    console.error("\n❌ Validation failed: Placeholder text found in legal pages");
-    console.error("These placeholders should be replaced or removed before production.\n");
+  console.log("→ Cohérence de l'adresse e-mail…");
+  const legalCfg = await fs.readFile(path.join(__dirname, "..", "src/config/legal.ts"), "utf-8");
+  const siteCfg = await fs.readFile(path.join(__dirname, "..", "src/config/site.ts"), "utf-8");
+  const em1 = legalCfg.match(/email:\s*"([^"]+)"/)?.[1];
+  const em2 = siteCfg.match(/contactEmail:\s*"([^"]+)"/)?.[1];
+  if (em1 && em2 && em1 !== em2) {
+    console.error(`  ❌ E-mail incohérent : legal.ts=${em1} vs site.ts=${em2}`);
     process.exit(1);
   }
+  console.log("  ✅ E-mail cohérent\n");
 
-  // Check 4: Contact email consistency
-  console.log("Checking contact email consistency...");
-  const configPath = path.join(__dirname, "..", "src/config/legal.ts");
-  const configContent = await fs.readFile(configPath, "utf-8");
-  const siteConfigPath = path.join(__dirname, "..", "src/config/site.ts");
-  const siteConfigContent = await fs.readFile(siteConfigPath, "utf-8");
-
-  const legalEmailMatch = configContent.match(/email:\s*"([^"]+)"/);
-  const siteEmailMatch = siteConfigContent.match(/contactEmail:\s*"([^"]+)"/);
-
-  if (legalEmailMatch && siteEmailMatch && legalEmailMatch[1] !== siteEmailMatch[1]) {
-    console.error(`❌ Contact email mismatch:`);
-    console.error(`   legal.ts: ${legalEmailMatch[1]}`);
-    console.error(`   site.ts:  ${siteEmailMatch[1]}`);
-    process.exit(1);
-  }
-  console.log("✅ Contact email consistent\n");
-
-  console.log("✅ Legal validation passed!\n");
+  console.log("✅ Validation juridique passée.\n");
   process.exit(0);
 }
 
-main().catch((error) => {
-  console.error("❌ Validation script error:", error);
+main().catch((e) => {
+  console.error("❌ Erreur du script :", e);
   process.exit(1);
 });

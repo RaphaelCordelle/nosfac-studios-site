@@ -5,21 +5,87 @@ import {
   PUBLIC_BRAND_NAME,
   LEGAL_IDENTITY,
   CONTACT,
-  PROCESSORS,
   RETENTION_PERIODS,
-  AGE_POLICY,
   LAST_UPDATED,
 } from "@/config/legal";
+import { PRODUCTS, type ProductConfig } from "@/config/products";
 
 export const metadata: Metadata = { title: "Politique de confidentialité" };
+
+/** Section rendered for a product that has NO active service (KnowOut, Music Game currently) */
+function InDevelopmentNotice({ product }: { product: ProductConfig }) {
+  return (
+    <p>
+      {product.displayName} est actuellement en développement. Les informations relatives à ses
+      traitements de données seront finalisées et publiées avant toute mise à disposition publique
+      impliquant un compte ou des données personnelles.
+    </p>
+  );
+}
+
+/** Section rendered for a product with active data processing (Chain currently) */
+function ProductDataSection({ product }: { product: ProductConfig }) {
+  if (product.dataCategories.length === 0) {
+    return <InDevelopmentNotice product={product} />;
+  }
+
+  return (
+    <>
+      <p>
+        <strong>Statut&nbsp;:</strong> {product.status === "in-development" ? "En développement, build de test" : product.status}
+        <br />
+        <strong>Plateformes&nbsp;:</strong> {product.platforms.join(", ") || "à confirmer"}
+        <br />
+        <strong>Compte utilisateur&nbsp;:</strong>{" "}
+        {product.hasAccount ? "Oui (via Supabase Auth)" : "Non"}
+        <br />
+        <strong>Achats intégrés&nbsp;:</strong>{" "}
+        {product.hasInAppPurchases ? "Oui, via Google Play Billing" : "Non pour le moment"}
+        <br />
+        <strong>Publicités&nbsp;:</strong>{" "}
+        {product.hasAdvertising ? "Oui" : "Non pour le moment"}
+      </p>
+
+      <p><strong>Prestataires utilisés par ce projet&nbsp;:</strong> {product.providers.join(", ")}</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Donnée</th>
+            <th>Exemple</th>
+            <th>Finalité</th>
+            <th>Base légale</th>
+            <th>Obligatoire</th>
+            <th>Durée</th>
+          </tr>
+        </thead>
+        <tbody>
+          {product.dataCategories.map((row) => (
+            <tr key={row.category}>
+              <td>{row.category}</td>
+              <td>{row.examples}</td>
+              <td>{row.purpose}</td>
+              <td>{row.legalBasis}</td>
+              <td>{row.required ? "Oui" : "Facultatif"}</td>
+              <td>{row.retention ?? "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <p className="text-sm text-foreground-subtle">
+        Dernière vérification&nbsp;: {new Date(product.verificationDate).toLocaleDateString("fr-FR")}
+      </p>
+    </>
+  );
+}
 
 function ResponsibleSection() {
   if (LEGAL_STATUS === "individual-non-professional") {
     return (
       <p>
         Le responsable du traitement des données présentées dans cette politique est le fondateur de{" "}
-        {PUBLIC_BRAND_NAME}, agissant sous ce nom d&apos;usage. Pour toute question relative à cette politique ou à vos
-        données :{" "}
+        {PUBLIC_BRAND_NAME}, agissant sous ce nom d&apos;usage. Contact&nbsp;:{" "}
         <a href={`mailto:${CONTACT.email}`} className="underline">
           {CONTACT.email}
         </a>
@@ -27,17 +93,13 @@ function ResponsibleSection() {
       </p>
     );
   }
-
   return (
     <p>
-      Le responsable du traitement des données présentées dans cette politique est{" "}
-      {LEGAL_IDENTITY.legalName ?? PUBLIC_BRAND_NAME}, agissant sous le nom {PUBLIC_BRAND_NAME}.
-      {LEGAL_IDENTITY.postalAddress && <> Siège : {LEGAL_IDENTITY.postalAddress}.</>}{" "}
-      Pour toute question :{" "}
+      Le responsable du traitement est {LEGAL_IDENTITY.legalName ?? PUBLIC_BRAND_NAME}, agissant sous le nom {PUBLIC_BRAND_NAME}.
+      Contact&nbsp;:{" "}
       <a href={`mailto:${CONTACT.email}`} className="underline">
         {CONTACT.email}
       </a>
-      .
     </p>
   );
 }
@@ -46,442 +108,209 @@ export default function PrivacyPage() {
   return (
     <LegalPageLayout title="Politique de confidentialité" updatedAt={LAST_UPDATED.privacy}>
       <p>
-        Cette politique décrit comment {PUBLIC_BRAND_NAME} collecte, utilise et protège vos données personnelles.
-        Elle couvre le site web {PUBLIC_BRAND_NAME}{" "}ainsi que l&apos;application Chain. Elle est rédigée pour être
-        compréhensible par tous ; pour toute précision technique, contactez-nous.
+        Cette politique décrit comment {PUBLIC_BRAND_NAME}{" "}collecte et traite les données
+        personnelles sur son site web et dans ses applications. Elle est unique pour l&apos;ensemble
+        du studio, mais contient une section distincte pour chaque projet, car les traitements ne
+        sont pas identiques d&apos;un jeu à l&apos;autre.
       </p>
 
-      <h2>Responsable du traitement</h2>
+      {/* Table of contents */}
+      <h2>Sommaire</h2>
+      <ol>
+        <li><a href="#responsable" className="underline">Responsable du traitement</a></li>
+        <li><a href="#perimetre" className="underline">Périmètre</a></li>
+        <li><a href="#site" className="underline">Site Nosfac Studios</a></li>
+        {PRODUCTS.map((p) => (
+          <li key={p.id}>
+            <a href={`#${p.anchorId}`} className="underline">{p.displayName}</a>
+          </li>
+        ))}
+        <li><a href="#prestataires" className="underline">Prestataires et destinataires</a></li>
+        <li><a href="#transferts" className="underline">Transferts hors EEE</a></li>
+        <li><a href="#conservation" className="underline">Durées de conservation</a></li>
+        <li><a href="#securite" className="underline">Sécurité</a></li>
+        <li><a href="#mineurs" className="underline">Mineurs</a></li>
+        <li><a href="#droits" className="underline">Vos droits</a></li>
+        <li><a href="#suppression" className="underline">Suppression des comptes</a></li>
+        <li><a href="#modifications" className="underline">Modifications de la politique</a></li>
+      </ol>
+
+      <h2 id="responsable">1. Responsable du traitement</h2>
       <ResponsibleSection />
 
-      <h2>Périmètre</h2>
-      <p>Cette politique couvre :</p>
-      <ul>
-        <li>
-          <strong>Le site web {PUBLIC_BRAND_NAME}</strong> (formulaire de contact, préférence de thème)
-        </li>
-        <li>
-          <strong>L&apos;application Chain</strong> (Android, iOS à venir) lorsque les traitements sont actifs
-        </li>
-      </ul>
+      <h2 id="perimetre">2. Périmètre</h2>
       <p>
-        Les autres projets présentés sur le site (KnowOut, jeu musical) ne font pas encore l&apos;objet d&apos;un service
-        public impliquant un compte joueur. Leur politique sera précisée avant leur mise à disposition.
+        Cette politique couvre le site web {PUBLIC_BRAND_NAME} et chacun des projets publiés ou en
+        développement. Chaque section spécifique à un projet indique explicitement l&apos;état
+        actuel des traitements. Les projets non publiés ne collectent pas de données publiques
+        tant qu&apos;ils ne sont pas mis à disposition.
       </p>
 
-      <h2>Données collectées par le site web</h2>
-
-      <h3>Formulaire de contact et support</h3>
+      {/* SITE section */}
+      <h2 id="site">3. Site Nosfac Studios</h2>
+      <p>
+        Le site utilise deux traitements&nbsp;: le formulaire de contact et le stockage local de
+        la préférence de thème.
+      </p>
       <table>
         <thead>
           <tr>
             <th>Donnée</th>
             <th>Finalité</th>
             <th>Base légale</th>
-            <th>Obligatoire / Facultatif</th>
-            <th>Durée de conservation</th>
+            <th>Durée</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Nom</td>
-            <td>Répondre à votre demande</td>
+            <td>Nom, e-mail, message (formulaire)</td>
+            <td>Traiter la demande envoyée</td>
             <td>Mesures précontractuelles / Intérêt légitime</td>
-            <td>Obligatoire</td>
-            <td>{RETENTION_PERIODS.contactMessages}</td>
-          </tr>
-          <tr>
-            <td>Adresse e-mail</td>
-            <td>Répondre à votre demande</td>
-            <td>Mesures précontractuelles / Intérêt légitime</td>
-            <td>Obligatoire</td>
-            <td>{RETENTION_PERIODS.contactMessages}</td>
-          </tr>
-          <tr>
-            <td>Message et champs contextuels</td>
-            <td>Traiter votre demande (bug, business, support, etc.)</td>
-            <td>Mesures précontractuelles / Intérêt légitime</td>
-            <td>Obligatoire</td>
             <td>{RETENTION_PERIODS.contactMessages}</td>
           </tr>
           <tr>
             <td>Adresse IP (hachée)</td>
             <td>Limitation anti-spam</td>
             <td>Intérêt légitime (sécurité)</td>
-            <td>Automatique</td>
-            <td>{RETENTION_PERIODS.rateLimitRecords}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        <strong>Destinataires</strong> : Les demandes sont envoyées par email à {CONTACT.email} via{" "}
-        {PROCESSORS.email.name} ({PROCESSORS.email.purpose}). La vérification anti-bot est assurée par{" "}
-        {PROCESSORS.antiBot.name}.
-      </p>
-
-      <h3>Préférence de thème</h3>
-      <p>
-        Votre préférence de thème (clair, sombre ou système) est enregistrée <strong>uniquement dans votre navigateur</strong>{" "}
-        (localStorage), pas dans un cookie. Elle sert exclusivement à votre confort de lecture et n&apos;est{" "}
-        <strong>jamais transmise au serveur</strong>. Vous pouvez la supprimer à tout moment en effaçant les données de
-        votre navigateur.
-      </p>
-
-      <h3>Analytics et cookies</h3>
-      <p>
-        Le site n&apos;utilise actuellement <strong>aucun cookie non essentiel ni outil d&apos;analytics</strong>. Consultez la{" "}
-        <a href="/legal/cookies" className="underline">
-          politique cookies
-        </a>{" "}
-        pour plus de détails.
-      </p>
-
-      <h2>Données collectées par Chain</h2>
-
-      <h3>Compte utilisateur</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Donnée</th>
-            <th>Finalité</th>
-            <th>Base légale</th>
-            <th>Obligatoire / Facultatif</th>
-            <th>Durée</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Identifiant compte interne</td>
-            <td>Identification unique</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire</td>
-            <td>{RETENTION_PERIODS.chainAccounts}</td>
-          </tr>
-          <tr>
-            <td>Adresse e-mail</td>
-            <td>Authentification, récupération du compte</td>
-            <td>Exécution du contrat</td>
-            <td>Facultatif (possibilité de jouer en invité)</td>
-            <td>{RETENTION_PERIODS.chainAccounts}</td>
-          </tr>
-          <tr>
-            <td>Fournisseur de connexion (Google/Apple/e-mail)</td>
-            <td>Gestion de l&apos;authentification</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire si vous liez votre compte</td>
-            <td>{RETENTION_PERIODS.chainAccounts}</td>
-          </tr>
-          <tr>
-            <td>Mot de passe (si connexion e-mail)</td>
-            <td>Authentification</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire si connexion e-mail</td>
-            <td>{RETENTION_PERIODS.chainAccounts}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        <strong>Important</strong> : Les mots de passe sont hashés par Supabase et ne sont <strong>jamais accessibles en clair</strong>{" "}
-        par {PUBLIC_BRAND_NAME}.
-      </p>
-
-      <h3>Profil et progression</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Donnée</th>
-            <th>Finalité</th>
-            <th>Base légale</th>
-            <th>Obligatoire / Facultatif</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Pseudonyme</td>
-            <td>Affichage dans le jeu, classements</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire</td>
-          </tr>
-          <tr>
-            <td>Avatar</td>
-            <td>Personnalisation</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire (choix par défaut)</td>
-          </tr>
-          <tr>
-            <td>Niveau, progression, statistiques</td>
-            <td>Fonctionnement du jeu</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire</td>
-          </tr>
-          <tr>
-            <td>Records personnels, classement</td>
-            <td>Affichage records, classements</td>
-            <td>Exécution du contrat</td>
-            <td>Obligatoire</td>
-          </tr>
-          <tr>
-            <td>Paramètres du jeu</td>
-            <td>Préférences joueur</td>
-            <td>Exécution du contrat</td>
-            <td>Facultatif</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Gameplay et lutte contre la triche</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Donnée</th>
-            <th>Finalité</th>
-            <th>Base légale</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Résultats de parties</td>
-            <td>Calcul des scores, classements</td>
-            <td>Exécution du contrat</td>
-          </tr>
-          <tr>
-            <td>Historique des parties récentes</td>
-            <td>Affichage de votre historique</td>
-            <td>Exécution du contrat</td>
-          </tr>
-          <tr>
-            <td>Tentatives du défi quotidien</td>
-            <td>Limitation quotidienne, prévention de la triche</td>
-            <td>Exécution du contrat + Intérêt légitime</td>
-          </tr>
-          <tr>
-            <td>Signalements et événements suspects</td>
-            <td>Prévention de la fraude et des abus</td>
-            <td>Intérêt légitime</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Achats intégrés</h3>
-      <p>
-        <strong>Chain ne collecte JAMAIS vos informations bancaires</strong>. Les paiements sont traités exclusivement
-        par Google Play. Chain reçoit uniquement :
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Donnée</th>
-            <th>Finalité</th>
-            <th>Base légale</th>
-            <th>Durée</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Reçu / token d&apos;achat Google Play</td>
-            <td>Vérification de l&apos;achat, attribution du contenu acheté</td>
-            <td>Exécution du contrat</td>
-            <td>Jusqu&apos;à 10 ans (obligation comptable potentielle)</td>
-          </tr>
-          <tr>
-            <td>Historique des achats (produit, date)</td>
-            <td>Suivi achats, support, prévention fraude</td>
-            <td>Exécution du contrat + Obligation légale</td>
-            <td>Jusqu&apos;à 10 ans (obligation comptable potentielle)</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>Visibilité publique et fonctionnalités sociales</h3>
-      <p>
-        Si vous activez la visibilité publique de votre profil ou partagez un lien (parrainage, résultat de partie),
-        les informations que vous avez choisi de partager (pseudonyme, avatar, niveau, meilleurs scores) sont{" "}
-        <strong>visibles par toute personne disposant du lien</strong>. Vous pouvez désactiver cela à tout moment dans
-        Profil → Visibilité du profil.
-      </p>
-
-      <h2>Sous-traitants et destinataires</h2>
-      <p>Vos données peuvent être transmises aux prestataires suivants :</p>
-      <ul>
-        {PROCESSORS.hosting.active && (
-          <li>
-            <strong>{PROCESSORS.hosting.name}</strong> — {PROCESSORS.hosting.purpose}
-          </li>
-        )}
-        {PROCESSORS.email.active && (
-          <li>
-            <strong>{PROCESSORS.email.name}</strong> — {PROCESSORS.email.purpose}
-          </li>
-        )}
-        {PROCESSORS.antiBot.active && (
-          <li>
-            <strong>{PROCESSORS.antiBot.name}</strong> — {PROCESSORS.antiBot.purpose}
-          </li>
-        )}
-        {PROCESSORS.chainBackend.active && (
-          <li>
-            <strong>{PROCESSORS.chainBackend.name}</strong> — {PROCESSORS.chainBackend.purpose}
-          </li>
-        )}
-        {PROCESSORS.chainPayments.active && (
-          <li>
-            <strong>{PROCESSORS.chainPayments.name}</strong> — {PROCESSORS.chainPayments.purpose}. Google Play traite les
-            paiements ; nous ne voyons jamais votre moyen de paiement.
-          </li>
-        )}
-        {PROCESSORS.chainAttribution.active && (
-          <li>
-            <strong>{PROCESSORS.chainAttribution.name}</strong> — {PROCESSORS.chainAttribution.purpose}
-          </li>
-        )}
-      </ul>
-
-      <h2>Transferts hors de l&apos;Espace économique européen</h2>
-      <p>
-        Certains de nos prestataires (Vercel, Resend, Cloudflare, Google) peuvent traiter vos données en dehors de
-        l&apos;Union européenne, notamment aux États-Unis. Ces transferts sont encadrés par les mécanismes juridiques
-        prévus par le RGPD (clauses contractuelles types, décisions d&apos;adéquation) selon les engagements de chaque
-        prestataire. Pour plus d&apos;informations sur les garanties appliquées, contactez-nous.
-      </p>
-
-      <h2>Durées de conservation</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Donnée</th>
-            <th>Durée</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Demandes de contact</td>
-            <td>{RETENTION_PERIODS.contactMessages}</td>
-          </tr>
-          <tr>
-            <td>Limitation anti-spam (IP hachée)</td>
             <td>{RETENTION_PERIODS.rateLimitRecords}</td>
           </tr>
           <tr>
-            <td>Comptes Chain (compte actif)</td>
-            <td>{RETENTION_PERIODS.chainAccounts}</td>
-          </tr>
-          <tr>
-            <td>Données Chain après suppression de compte</td>
-            <td>{RETENTION_PERIODS.chainAccountAfterDeletion}</td>
-          </tr>
-          <tr>
-            <td>Logs techniques (Supabase, Vercel)</td>
-            <td>{RETENTION_PERIODS.technicalLogs}</td>
+            <td>Préférence de thème (localStorage)</td>
+            <td>Confort de lecture</td>
+            <td>Consentement implicite (stockage local, jamais transmis au serveur)</td>
+            <td>Jusqu&apos;à suppression par l&apos;utilisateur</td>
           </tr>
         </tbody>
       </table>
+      <p>
+        <strong>Prestataires du site&nbsp;:</strong> Vercel (hébergement), Resend (envoi des
+        messages du formulaire, si activé), Cloudflare Turnstile (anti-bot, si activé). Aucun
+        outil d&apos;analytics n&apos;est actuellement utilisé.
+      </p>
 
-      <h2>Vos droits</h2>
-      <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+      {/* Per-project sections */}
+      {PRODUCTS.map((product, i) => (
+        <section key={product.id}>
+          <h2 id={product.anchorId}>{i + 4}. {product.displayName}</h2>
+          <ProductDataSection product={product} />
+        </section>
+      ))}
+
+      <h2 id="prestataires">{4 + PRODUCTS.length}. Prestataires et destinataires</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Prestataire</th>
+            <th>Service concerné</th>
+            <th>Rôle</th>
+            <th>Données potentielles</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Vercel Inc.</td>
+            <td>Site {PUBLIC_BRAND_NAME}</td>
+            <td>Hébergement, CDN</td>
+            <td>Logs techniques de connexion</td>
+          </tr>
+          <tr>
+            <td>Resend</td>
+            <td>Formulaire du site (si activé)</td>
+            <td>Envoi des e-mails</td>
+            <td>Nom, e-mail, contenu du message</td>
+          </tr>
+          <tr>
+            <td>Cloudflare</td>
+            <td>Formulaire du site (Turnstile, si activé)</td>
+            <td>Anti-bot</td>
+            <td>Token temporaire, IP</td>
+          </tr>
+          <tr>
+            <td>Supabase</td>
+            <td>Chain uniquement</td>
+            <td>Authentification, base de données</td>
+            <td>Compte joueur, progression</td>
+          </tr>
+          <tr>
+            <td>Google Play</td>
+            <td>Chain uniquement (Android)</td>
+            <td>Distribution</td>
+            <td>Aucune donnée transmise par {PUBLIC_BRAND_NAME} directement</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Un prestataire n&apos;est cité pour un projet que s&apos;il est réellement utilisé dans la
+        version courante de ce projet. L&apos;ajout d&apos;un nouveau service (analytics,
+        publicité, monitoring) fera l&apos;objet d&apos;une mise à jour explicite de cette
+        politique.
+      </p>
+
+      <h2 id="transferts">{5 + PRODUCTS.length}. Transferts hors de l&apos;Espace économique européen</h2>
+      <p>
+        Certains prestataires (Vercel, Resend, Cloudflare, Google) peuvent traiter des données
+        aux États-Unis. Ces transferts sont encadrés par les mécanismes juridiques prévus par le
+        RGPD (clauses contractuelles types, décisions d&apos;adéquation), selon les engagements
+        publics de chaque prestataire.
+      </p>
+
+      <h2 id="conservation">{6 + PRODUCTS.length}. Durées de conservation</h2>
+      <p>
+        Les durées applicables varient selon le type de donnée et le projet. Les durées sont
+        indiquées dans chaque tableau ci-dessus. Les durées non encore stabilisées techniquement
+        seront précisées avant la mise à disposition publique du projet concerné.
+      </p>
+
+      <h2 id="securite">{7 + PRODUCTS.length}. Sécurité</h2>
+      <p>
+        {PUBLIC_BRAND_NAME} met en œuvre des mesures proportionnées&nbsp;: connexions chiffrées
+        (HTTPS, TLS), hachage des mots de passe, contrôle d&apos;accès (Row Level Security
+        Supabase pour Chain), validation serveur, limitation de fréquence, journaux de sécurité.
+        Aucune sécurité n&apos;est absolue. Les données choisies comme publiques par un joueur
+        (par exemple un résultat partagé) restent visibles par les personnes disposant du lien.
+      </p>
+
+      <h2 id="mineurs">{8 + PRODUCTS.length}. Mineurs</h2>
+      <p>
+        La politique vis-à-vis des mineurs sera précisée pour chaque projet en cohérence avec sa
+        classification IARC et le public cible déclaré dans les fiches Google Play et App Store
+        avant tout lancement commercial.
+      </p>
+
+      <h2 id="droits">{9 + PRODUCTS.length}. Vos droits</h2>
+      <p>Conformément au RGPD, vous disposez des droits suivants&nbsp;:</p>
       <ul>
-        <li>
-          <strong>Droit d&apos;accès</strong> : Obtenir une copie de vos données personnelles
-        </li>
-        <li>
-          <strong>Droit de rectification</strong> : Corriger vos données inexactes ou incomplètes
-        </li>
-        <li>
-          <strong>Droit à l&apos;effacement</strong> : Demander la suppression de vos données (sous certaines conditions)
-        </li>
-        <li>
-          <strong>Droit à la limitation</strong> : Limiter le traitement de vos données
-        </li>
-        <li>
-          <strong>Droit d&apos;opposition</strong> : Vous opposer à certains traitements
-        </li>
-        <li>
-          <strong>Droit à la portabilité</strong> : Récupérer vos données dans un format structuré
-        </li>
-        <li>
-          <strong>Droit de retirer votre consentement</strong> : Lorsqu&apos;un traitement est fondé sur votre consentement
-        </li>
-        <li>
-          <strong>Droit de réclamation</strong> : Introduire une réclamation auprès de la CNIL
+        <li>Droit d&apos;accès à vos données</li>
+        <li>Droit de rectification</li>
+        <li>Droit à l&apos;effacement (voir aussi la <a href="#suppression" className="underline">section suppression</a>)</li>
+        <li>Droit à la limitation du traitement</li>
+        <li>Droit d&apos;opposition</li>
+        <li>Droit à la portabilité (lorsqu&apos;il est techniquement pertinent)</li>
+        <li>Droit de retirer votre consentement</li>
+        <li>Droit d&apos;introduire une réclamation auprès de la CNIL&nbsp;:{" "}
+          <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer" className="underline">
+            www.cnil.fr/fr/plaintes
+          </a>
         </li>
       </ul>
       <p>
         Pour exercer ces droits, contactez{" "}
-        <a href={`mailto:${CONTACT.email}`} className="underline">
-          {CONTACT.email}
-        </a>{" "}
-        ou utilisez les outils intégrés à l&apos;application Chain (voir section suivante). Une preuve d&apos;identité peut
-        être demandée en cas de doute légitime sur votre identité.
-      </p>
-      <p>
-        Pour introduire une réclamation auprès de la CNIL :{" "}
-        <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer" className="underline">
-          www.cnil.fr/fr/plaintes
-        </a>
+        <a href={`mailto:${CONTACT.email}`} className="underline">{CONTACT.email}</a>. Une preuve
+        d&apos;identité peut être demandée en cas de doute légitime.
       </p>
 
-      <h2 id="supprimer-mon-compte">Supprimer votre compte Chain</h2>
+      <h2 id="suppression">{10 + PRODUCTS.length}. Suppression des comptes</h2>
       <p>
-        Vous pouvez supprimer votre compte Chain et toutes les données associées à tout moment. La suppression est{" "}
-        <strong>immédiate et irréversible</strong>.
-      </p>
-      <p>
-        <strong>Depuis l&apos;application</strong> : Profil → Centre légal → Supprimer mon compte
-      </p>
-      <p>
-        <strong>Sans l&apos;application</strong> : Si vous n&apos;avez plus accès à l&apos;application, vous pouvez demander la
-        suppression via notre{" "}
-        <a href="/suppression-compte" className="underline">
-          page de suppression de compte
-        </a>{" "}
-        ou en écrivant à{" "}
-        <a href={`mailto:${CONTACT.email}`} className="underline">
-          {CONTACT.email}
-        </a>
-        .
-      </p>
-      <p>
-        <strong>Important</strong> : Supprimer votre compte Chain n&apos;annule pas automatiquement un abonnement Google Play.
-        Vous devez résilier votre abonnement séparément depuis le Play Store si vous ne souhaitez pas qu&apos;il se
-        renouvelle.
+        La suppression des comptes est traitée sur une page dédiée où vous pouvez choisir le
+        projet concerné&nbsp;:{" "}
+        <a href="/suppression-compte" className="underline">/suppression-compte</a>.
       </p>
 
-      <h2>Sécurité</h2>
+      <h2 id="modifications">{11 + PRODUCTS.length}. Modifications de la politique</h2>
       <p>
-        Nous mettons en œuvre des mesures techniques et organisationnelles pour protéger vos données, notamment :
-      </p>
-      <ul>
-        <li>Connexions chiffrées (HTTPS, TLS)</li>
-        <li>Contrôle d&apos;accès strict (Row Level Security sur Supabase)</li>
-        <li>Validation serveur et limitation de fréquence</li>
-        <li>Hachage des mots de passe</li>
-        <li>Journalisation de sécurité</li>
-      </ul>
-      <p>
-        <strong>Important</strong> : Les données que vous choisissez de rendre publiques (profil public, liens partagés)
-        sont visibles par toute personne disposant du lien. Vous contrôlez cette visibilité dans les paramètres de
-        Chain.
-      </p>
-
-      <h2>Mineurs</h2>
-      {AGE_POLICY.minimumAge ? (
-        <p>
-          Chain est destiné aux utilisateurs âgés d&apos;au moins {AGE_POLICY.minimumAge} ans. Si vous avez moins de{" "}
-          {AGE_POLICY.minimumAge} ans, vous ne devez pas utiliser Chain sans l&apos;autorisation et la supervision de vos
-          parents ou tuteurs légaux.
-        </p>
-      ) : (
-        <p>
-          La politique vis-à-vis des mineurs sera précisée en cohérence avec la classification IARC et le public
-          cible déclaré dans la Play Console avant le lancement commercial.
-        </p>
-      )}
-
-      <h2>Modifications de cette politique</h2>
-      <p>
-        Nous pouvons mettre à jour cette politique pour refléter des changements dans nos pratiques ou pour des raisons
-        légales. La date de dernière mise à jour est indiquée en haut de cette page. En cas de changement
-        significatif concernant Chain, les joueurs concernés en seront informés dans l&apos;application.
+        Cette politique peut évoluer. La date de dernière mise à jour est indiquée en haut de la
+        page. Les changements significatifs concernant un projet seront signalés dans
+        l&apos;application concernée.
       </p>
     </LegalPageLayout>
   );

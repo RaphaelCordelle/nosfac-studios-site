@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
+import NextLink from "next/link";
+import Image from "next/image";
 import { getPublicProjects } from "@/lib/content/projects";
-import { ProjectCard } from "@/components/content/project-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { FilterChip } from "@/components/ui/filter-chip";
-import { ProjectTypeSchema, type ProjectType } from "@/domain/project";
-import { Reveal } from "@/components/motion/reveal";
-import { AnimatedHeading } from "@/components/motion/animated-heading";
+import { ProjectTypeSchema, type ProjectType, STATUS_LABELS } from "@/domain/project";
 
 export const metadata: Metadata = {
   title: "Projets",
@@ -29,101 +28,119 @@ export default async function ProjectsIndexPage({
 
   const allProjects = getPublicProjects();
   const projects = activeType ? allProjects.filter((p) => p.type === activeType) : allProjects;
-  const featured = !activeType ? projects.find((p) => p.featured) : undefined;
-  const rest = projects.filter((p) => p.slug !== featured?.slug);
-
   const availableTypes = Array.from(new Set(allProjects.map((p) => p.type)));
   const total = allProjects.length;
 
   return (
-    <div className="relative">
-      {/* Hero header */}
-      <section className="relative overflow-hidden">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 right-[-8%] h-[500px] w-[500px] rounded-full bg-accent-500/8 blur-[110px]"
-        />
-        <div className="mx-auto max-w-[1400px] px-5 pt-16 pb-10 md:px-8 md:pt-24 md:pb-14">
-          <div className="mb-8 flex items-center gap-2 font-mono text-[11px] tracking-wider text-foreground-subtle uppercase md:mb-12">
+    <div>
+      {/* Masthead */}
+      <section className="border-b border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 pt-10 pb-10 md:px-8 md:pt-14 md:pb-14">
+          <div className="flex items-baseline justify-between gap-6 text-[12px] text-foreground-subtle">
             <span>Catalogue</span>
-            <span className="text-foreground-subtle/40" aria-hidden>·</span>
-            <span>{String(total).padStart(2, "0")} projet{total > 1 ? "s" : ""} publié{total > 1 ? "s" : ""}</span>
+            <span className="tabular">{String(total).padStart(2, "0")} projets</span>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-12 md:items-end">
-            <div className="md:col-span-8">
-              <AnimatedHeading
-                as="h1"
-                className="text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-[0.98] tracking-[-0.03em]"
-              >
-                Ce que nous
-              </AnimatedHeading>
-              <h1
-                aria-hidden
-                className="mt-1 text-[clamp(2.5rem,7vw,6rem)] font-semibold leading-[0.98] tracking-[-0.03em]"
-              >
-                <span className="font-display italic text-accent-500">construisons</span>.
-              </h1>
-            </div>
-            <div className="md:col-span-4">
-              <p className="max-w-md text-base leading-relaxed text-foreground-muted md:text-lg">
-                Jeux, applications et expérimentations. Chaque projet a sa propre ambiance ; tous
-                partagent la même exigence d&apos;exécution.
-              </p>
-            </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-12 md:gap-8">
+            <h1 className="md:col-span-7 text-[clamp(2rem,3vw+1rem,3rem)] leading-[1.05] tracking-[-0.02em] font-medium">
+              Projets
+            </h1>
+            <p className="md:col-span-5 text-[15px] leading-[1.6] text-foreground-muted md:pt-3">
+              Chaque projet est présenté au stade où il en est. Aucun date de sortie n&apos;est
+              affichée avant qu&apos;elle ne soit tenue.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Filters + grid */}
-      <section className="border-t border-border-subtle">
-        <div className="mx-auto max-w-[1400px] px-5 py-12 md:px-8 md:py-16">
-          {availableTypes.length > 1 ? (
-            <nav
-              aria-label="Filtrer les projets"
-              className="mb-10 flex gap-2 overflow-x-auto pb-2"
-            >
-              <FilterChip href="/projects" active={!activeType}>
-                Tous · {allProjects.length}
-              </FilterChip>
-              {availableTypes.map((t) => {
-                const count = allProjects.filter((p) => p.type === t).length;
-                return (
-                  <FilterChip key={t} href={`/projects?type=${t}`} active={activeType === t}>
-                    {TYPE_LABELS[t]} · {count}
-                  </FilterChip>
-                );
-              })}
-            </nav>
-          ) : null}
-
-          {projects.length === 0 ? (
-            <EmptyState
-              title="Aucun projet ne correspond à ces filtres."
-              action={
-                <FilterChip href="/projects" active>
-                  Réinitialiser
+      {/* Filters — inline discrets */}
+      {availableTypes.length > 1 && (
+        <div className="border-b border-border-subtle">
+          <nav
+            aria-label="Filtrer les projets"
+            className="mx-auto flex max-w-[1200px] items-center gap-3 overflow-x-auto px-5 py-3 md:px-8"
+          >
+            <span className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle whitespace-nowrap">
+              Filtres
+            </span>
+            <FilterChip href="/projects" active={!activeType}>
+              Tous · {allProjects.length}
+            </FilterChip>
+            {availableTypes.map((t) => {
+              const count = allProjects.filter((p) => p.type === t).length;
+              return (
+                <FilterChip key={t} href={`/projects?type=${t}`} active={activeType === t}>
+                  {TYPE_LABELS[t]} · {count}
                 </FilterChip>
-              }
-            />
-          ) : (
-            <div className="flex flex-col gap-6 md:gap-8">
-              {featured ? (
-                <Reveal>
-                  <ProjectCard project={featured} variant="featured" />
-                </Reveal>
-              ) : null}
-              <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-                {rest.map((project, i) => (
-                  <Reveal key={project.slug} delay={i * 0.06}>
-                    <ProjectCard project={project} index={i + (featured ? 1 : 0)} />
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          )}
+              );
+            })}
+          </nav>
         </div>
-      </section>
+      )}
+
+      {/* Grid — full editorial list, no cards. Each project = article. */}
+      <div className="mx-auto max-w-[1200px] px-5 py-8 md:px-8 md:py-16">
+        {projects.length === 0 ? (
+          <EmptyState
+            title="Aucun projet ne correspond à ces filtres."
+            action={<FilterChip href="/projects" active>Réinitialiser</FilterChip>}
+          />
+        ) : (
+          <ol className="divide-y divide-border-subtle">
+            {projects.map((project, i) => (
+              <li key={project.slug}>
+                <NextLink
+                  href={`/projects/${project.slug}`}
+                  className="group grid gap-6 py-10 md:grid-cols-12 md:gap-8 md:py-14"
+                >
+                  <div className="tabular text-[13px] text-foreground-subtle md:col-span-1">
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+
+                  <div className="md:col-span-4">
+                    {project.heroMedia?.type === "image" && project.heroMedia.src ? (
+                      <div className="relative overflow-hidden bg-surface-elevated">
+                        <Image
+                          src={project.heroMedia.src}
+                          alt={project.heroMedia.alt}
+                          width={project.heroMedia.width ?? 800}
+                          height={project.heroMedia.height ?? 600}
+                          className="h-auto w-full transition-opacity duration-(--duration-standard) group-hover:opacity-90"
+                        />
+                      </div>
+                    ) : (
+                      <div className="aspect-[4/3] bg-surface-elevated" aria-hidden />
+                    )}
+                  </div>
+
+                  <div className="md:col-span-7 md:pl-4">
+                    <p className="text-[12px] text-foreground-subtle tabular">
+                      {STATUS_LABELS[project.status].label}
+                      {project.platforms.length > 0 && (
+                        <> · {project.platforms.map((p) => p.label).join(", ")}</>
+                      )}
+                    </p>
+                    <h2 className="mt-2 text-[26px] leading-[1.1] tracking-[-0.015em] font-medium md:text-[32px] group-hover:text-accent-600 transition-colors">
+                      {project.name}
+                      {project.provisionalName && (
+                        <span className="ml-2 text-[15px] font-normal text-foreground-subtle">
+                          (nom provisoire)
+                        </span>
+                      )}
+                    </h2>
+                    <p className="mt-3 text-[15px] leading-[1.6] text-foreground-muted max-w-lg">
+                      {project.summary}
+                    </p>
+                    <span className="mt-4 inline-flex items-baseline gap-1.5 text-[14px] font-medium link-underline">
+                      Fiche projet
+                      <span aria-hidden>→</span>
+                    </span>
+                  </div>
+                </NextLink>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
     </div>
   );
 }
