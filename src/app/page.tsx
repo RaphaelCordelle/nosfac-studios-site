@@ -2,7 +2,7 @@ import NextLink from "next/link";
 import { getPublicProjects, getFeaturedProject } from "@/lib/content/projects";
 import { getPublicArticles } from "@/lib/content/articles";
 import { SITE } from "@/config/site";
-import { MediaFrame } from "@/components/content/media-frame";
+import { HeroShowcase } from "@/components/content/hero-showcase";
 import { ProjectCard } from "@/components/content/project-card";
 import { ArticleCard } from "@/components/content/article-card";
 import { ProjectStatusBadge } from "@/components/ui/project-status";
@@ -26,16 +26,17 @@ export default function HomePage() {
           <p className="mt-6 max-w-prose text-base text-foreground-muted md:text-lg">
             {SITE.description}
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-4">
             <NextLink
               href="/projects"
-              className="flex h-12 items-center rounded-full bg-brand-500 px-6 text-sm font-medium text-white transition-colors duration-(--duration-fast) hover:bg-brand-300"
+              className="flex h-14 items-center gap-2 rounded-full bg-brand-500 px-8 text-base font-semibold text-white shadow-[0_8px_24px_-8px_var(--brand-500)] transition-all duration-(--duration-fast) hover:scale-[1.02] hover:bg-brand-300 hover:shadow-[0_10px_28px_-6px_var(--brand-500)]"
             >
               Découvrir nos projets
+              <span aria-hidden>→</span>
             </NextLink>
             <NextLink
               href="/support/contact"
-              className="flex h-12 items-center rounded-full border border-border-subtle px-6 text-sm font-medium transition-colors duration-(--duration-fast) hover:border-brand-500"
+              className="flex h-12 items-center rounded-full px-5 text-sm font-medium text-foreground-muted transition-colors duration-(--duration-fast) hover:text-foreground"
             >
               Nous contacter
             </NextLink>
@@ -44,7 +45,7 @@ export default function HomePage() {
 
         {featured ? (
           <div className="md:col-span-7">
-            <MediaFrame media={featured.heroMedia} accentHex={featured.accent.hex} priority />
+            <HeroShowcase media={featured.heroMedia} accentHex={featured.accent.hex} priority />
             <div className="mt-4 flex items-center justify-between gap-4">
               <div>
                 <ProjectStatusBadge status={featured.status} />
