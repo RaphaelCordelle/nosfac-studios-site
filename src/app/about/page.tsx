@@ -3,6 +3,7 @@ import NextLink from "next/link";
 import { getPublicProjects } from "@/lib/content/projects";
 import { SITE } from "@/config/site";
 import { STATUS_LABELS } from "@/domain/project";
+import { MethodList } from "@/components/motion/method-list";
 
 export const metadata: Metadata = {
   title: "À propos",
@@ -53,9 +54,9 @@ export default function AboutPage() {
       </section>
 
       {/* Méthode */}
-      <section className="border-t border-border-subtle bg-cream-100/50">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-          <div className="mb-10 max-w-2xl">
+      <section className="border-t border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="mb-10 max-w-2xl md:mb-14">
             <p className="text-[12px] font-semibold uppercase tracking-wider text-accent-600">
               Méthode de travail
             </p>
@@ -64,22 +65,14 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2 md:gap-6">
-            {[
+          <MethodList
+            steps={[
               { term: "Concevoir", desc: "Partir d'une règle simple, compréhensible sans tutoriel." },
               { term: "Construire", desc: "Prototyper avant de maquetter. Le prototype décide." },
               { term: "Tester", desc: "Vérifier chaque décision dans le vrai jeu, avec des joueurs qui n'ont pas conçu le jeu." },
               { term: "Corriger", desc: "Documenter les itérations, y compris les changements de direction." },
-            ].map((step, i) => (
-              <div key={step.term} className="rounded-2xl border border-border-subtle bg-surface-elevated p-6">
-                <span className="inline-flex size-9 items-center justify-center rounded-full bg-accent-50 text-[14px] font-semibold text-accent-600 tabular">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-4 text-[17px] font-semibold">{step.term}</h3>
-                <p className="mt-2 text-[14px] leading-[1.6] text-foreground-muted">{step.desc}</p>
-              </div>
-            ))}
-          </div>
+            ]}
+          />
         </div>
       </section>
 
