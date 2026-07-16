@@ -6,7 +6,7 @@ import { STATUS_LABELS } from "@/domain/project";
 
 export const metadata: Metadata = {
   title: "À propos",
-  description: "Le positionnement, l'origine du nom et la méthode de travail de Nosfac Studios.",
+  description: "Positionnement, origine du nom et méthode de travail de Nosfac Studios.",
 };
 
 export default function AboutPage() {
@@ -17,114 +17,101 @@ export default function AboutPage() {
 
   return (
     <div>
-      {/* Masthead */}
-      <section className="border-b border-border-subtle">
-        <div className="mx-auto max-w-[1200px] px-5 pt-10 pb-14 md:px-8 md:pt-14 md:pb-20">
-          <div className="flex items-baseline justify-between gap-6 text-[12px] text-foreground-subtle">
-            <span>À propos</span>
-            <span>Nosfac Studios</span>
-          </div>
-          <div className="mt-8 grid gap-8 md:grid-cols-12 md:gap-8">
-            <h1 className="md:col-span-8 text-[clamp(2rem,3vw+1rem,3rem)] leading-[1.05] tracking-[-0.02em] font-medium">
-              Un studio indépendant, construit projet après projet.
+      {/* Hero */}
+      <section className="bg-gradient-to-b from-cream-100 to-cream-50">
+        <div className="mx-auto max-w-[1200px] px-5 pt-14 pb-16 md:px-8 md:pt-20 md:pb-20">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent-100 bg-accent-50 px-3 py-1 text-[12px] font-medium text-accent-700">
+            À propos du studio
+          </span>
+          <div className="mt-6 grid gap-8 md:grid-cols-12 md:gap-10">
+            <h1 className="md:col-span-8 text-[clamp(2rem,3vw+1rem,3rem)] leading-[1.05] tracking-[-0.02em] font-semibold">
+              Un studio indépendant français, construit projet après projet.
             </h1>
-            <p className="md:col-span-4 md:pt-3 text-[15px] leading-[1.6] text-foreground-muted">
-              {SITE.name} édite des jeux et des applications en autonomie, sans investisseur
-              extérieur, à un rythme volontairement lent.
+            <p className="md:col-span-4 md:pt-2 text-[16px] leading-[1.65] text-foreground-muted">
+              {SITE.name} édite des jeux et applications en autonomie, sans investisseur, à un
+              rythme volontairement lent.
             </p>
           </div>
         </div>
       </section>
 
       {/* Origine */}
-      <section className="border-b border-border-subtle">
+      <section className="border-t border-border-subtle">
         <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
           <div className="grid gap-8 md:grid-cols-12 md:gap-10">
             <div className="md:col-span-4">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+              <p className="text-[12px] font-semibold uppercase tracking-wider text-accent-600">
                 Origine du nom
               </p>
+              <h2 className="mt-2 text-[22px] font-semibold tracking-tight">Nosfac</h2>
             </div>
-            <div className="md:col-span-8">
-              <p className="text-[17px] leading-[1.65] text-foreground max-w-2xl">
-                {SITE.originStory}
-              </p>
-            </div>
+            <p className="md:col-span-8 text-[17px] leading-[1.65] text-foreground max-w-2xl">
+              {SITE.originStory}
+            </p>
           </div>
         </div>
       </section>
 
       {/* Méthode */}
-      <section className="border-b border-border-subtle">
+      <section className="border-t border-border-subtle bg-cream-100/50">
         <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-          <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+          <div className="mb-10 max-w-2xl">
+            <p className="text-[12px] font-semibold uppercase tracking-wider text-accent-600">
               Méthode de travail
             </p>
+            <h2 className="mt-2 text-[clamp(1.75rem,2vw+1rem,2.25rem)] leading-[1.1] tracking-[-0.02em] font-semibold">
+              Concevoir, construire, tester, corriger.
+            </h2>
           </div>
 
-          <dl className="divide-y divide-border-subtle">
+          <div className="grid gap-5 md:grid-cols-2 md:gap-6">
             {[
-              {
-                term: "Concevoir",
-                desc: "Partir d'une règle ou d'une mécanique simple, compréhensible sans tutoriel.",
-              },
-              {
-                term: "Construire",
-                desc: "Développer un prototype jouable avant tout maquettage figé. Le prototype décide.",
-              },
-              {
-                term: "Tester",
-                desc: "Vérifier chaque décision en jeu réel, sur les vrais appareils, avec des joueurs qui ne connaissent pas déjà le projet.",
-              },
-              {
-                term: "Corriger",
-                desc: "Documenter les itérations, y compris les changements de direction. Rien n'est officiel tant que ce n'est pas testé.",
-              },
-            ].map((step) => (
-              <div key={step.term} className="grid gap-2 py-6 md:grid-cols-12 md:gap-8">
-                <dt className="text-[17px] font-medium md:col-span-3">{step.term}</dt>
-                <dd className="text-[15px] leading-[1.65] text-foreground-muted md:col-span-9">
-                  {step.desc}
-                </dd>
+              { term: "Concevoir", desc: "Partir d'une règle simple, compréhensible sans tutoriel." },
+              { term: "Construire", desc: "Prototyper avant de maquetter. Le prototype décide." },
+              { term: "Tester", desc: "Vérifier chaque décision dans le vrai jeu, avec des joueurs qui n'ont pas conçu le jeu." },
+              { term: "Corriger", desc: "Documenter les itérations, y compris les changements de direction." },
+            ].map((step, i) => (
+              <div key={step.term} className="rounded-2xl border border-border-subtle bg-surface-elevated p-6">
+                <span className="inline-flex size-9 items-center justify-center rounded-full bg-accent-50 text-[14px] font-semibold text-accent-600 tabular">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-4 text-[17px] font-semibold">{step.term}</h3>
+                <p className="mt-2 text-[14px] leading-[1.6] text-foreground-muted">{step.desc}</p>
               </div>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
       {/* Chronologie */}
       {timeline.length > 0 && (
-        <section className="border-b border-border-subtle">
+        <section className="border-t border-border-subtle">
           <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-            <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
+            <div className="mb-8">
+              <p className="text-[12px] font-semibold uppercase tracking-wider text-accent-600">
                 Chronologie
               </p>
-              <span className="tabular text-[11px] text-foreground-subtle">
-                {String(timeline.length).padStart(2, "0")} jalons
-              </span>
+              <h2 className="mt-2 text-[22px] font-semibold tracking-tight">Jalons du studio</h2>
             </div>
-            <ul className="divide-y divide-border-subtle">
+            <ul className="divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface-elevated overflow-hidden">
               {timeline.map((project) => (
                 <li key={project.slug}>
                   <NextLink
                     href={`/projects/${project.slug}`}
-                    className="grid gap-2 py-5 md:grid-cols-12 md:gap-8 hover:text-accent-600 transition-colors"
+                    className="group grid gap-2 px-5 py-4 md:grid-cols-12 md:gap-6 hover:bg-cream-100/50 transition-colors"
                   >
                     <time
-                      className="tabular text-[13px] text-foreground-subtle md:col-span-2"
+                      className="tabular text-[13px] text-foreground-subtle md:col-span-3"
                       dateTime={project.startedAt!}
                     >
-                      {new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(
-                        new Date(project.startedAt!),
-                      )}
+                      {new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(new Date(project.startedAt!))}
                     </time>
-                    <div className="md:col-span-10">
-                      <p className="text-[17px] font-medium">
-                        {project.name} <span className="text-foreground-subtle font-normal">— {STATUS_LABELS[project.status].label}</span>
-                      </p>
-                    </div>
+                    <p className="md:col-span-9 text-[15px]">
+                      <span className="font-semibold group-hover:text-accent-600 transition-colors">
+                        {project.name}
+                      </span>
+                      <span className="ml-2 text-foreground-muted">— {STATUS_LABELS[project.status].label}</span>
+                    </p>
                   </NextLink>
                 </li>
               ))}
@@ -133,32 +120,26 @@ export default function AboutPage() {
         </section>
       )}
 
-      {/* Colophon */}
-      <section>
+      {/* Contact */}
+      <section className="border-t border-border-subtle">
         <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-          <div className="grid gap-6 md:grid-cols-12 md:gap-8">
-            <p className="md:col-span-4 text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-              Contact professionnel
-            </p>
-            <div className="md:col-span-8">
-              <p className="text-[15px] leading-[1.6] text-foreground-muted max-w-md">
-                Pour les demandes de presse, partenariats ou candidatures spontanées, utilisez
-                le formulaire de contact ou écrivez directement à l&apos;adresse du studio.
-              </p>
-              <div className="mt-4 flex items-baseline gap-6">
+          <div className="rounded-3xl border border-border-subtle bg-cream-100 p-8 md:p-12">
+            <div className="grid gap-6 md:grid-cols-12 md:items-center md:gap-8">
+              <div className="md:col-span-8">
+                <p className="text-[12px] font-semibold uppercase tracking-wider text-accent-600">
+                  Contact professionnel
+                </p>
+                <h2 className="mt-2 text-[22px] font-semibold tracking-tight md:text-[26px]">
+                  Presse, partenariats, candidatures spontanées.
+                </h2>
+              </div>
+              <div className="md:col-span-4 md:text-right">
                 <NextLink
                   href="/support/contact?reason=business"
-                  className="inline-flex items-baseline gap-2 border-b border-foreground pb-0.5 text-[15px] font-medium hover:text-accent-600 hover:border-accent-600 transition-colors"
+                  className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-5 text-[14px] font-medium text-surface hover:bg-accent-600 transition-colors"
                 >
-                  Formulaire
-                  <span aria-hidden className="text-[13px]">→</span>
+                  Nous écrire →
                 </NextLink>
-                <a
-                  href={`mailto:${SITE.contactEmail}`}
-                  className="text-[14px] text-foreground-muted link-underline font-mono"
-                >
-                  {SITE.contactEmail}
-                </a>
               </div>
             </div>
           </div>

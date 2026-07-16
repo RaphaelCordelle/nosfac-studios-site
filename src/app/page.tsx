@@ -6,305 +6,309 @@ import { SITE } from "@/config/site";
 import { STATUS_LABELS } from "@/domain/project";
 
 /**
- * Home page — Composition "Journal éditorial".
+ * Home page — Direction "Warm Studio Product".
  *
- * Objectifs anti-cliché :
- *  - Pas de hero géant sur plusieurs lignes.
- *  - Pas de mot italique décoratif.
- *  - Pas de bouton pilule turquoise.
- *  - Pas de mockup téléphone flottant.
- *  - Presque monochrome. L'accent n'apparaît qu'une seule fois par section.
- *  - Layout en colonnes fines avec filets, pensé comme la Une d'un magazine.
+ * Base claire crème, sensation produit, hero engageant avec CTA visibles,
+ * cartes projets vraiment structurées, chaleur visuelle sans template SaaS.
  */
 export default function HomePage() {
   const projects = getPublicProjects();
   const featured = getFeaturedProject() ?? projects[0];
   const others = projects.filter((p) => p.slug !== featured?.slug);
-  const articles = getPublicArticles().slice(0, 2);
-
-  const currentDate = new Intl.DateTimeFormat("fr-FR", {
-    year: "numeric",
-    month: "long",
-  }).format(new Date());
+  const articles = getPublicArticles().slice(0, 3);
 
   return (
     <div>
       {/* =========================================================
-          MASTHEAD — Comme la Une d'un journal.
-          Date + numéro d'édition + issue. Titre modéré.
+          HERO — Landing page produit, avec mockup Chain intégré.
       ========================================================= */}
-      <section className="border-b border-border-subtle">
-        <div className="mx-auto max-w-[1200px] px-5 pt-10 pb-16 md:px-8 md:pt-14 md:pb-24">
-          {/* Meta line — sober, no dots pulsating */}
-          <div className="flex items-baseline justify-between gap-6 text-[12px] text-foreground-subtle">
-            <span className="tabular">{currentDate}</span>
-            <span className="hidden sm:inline">Studio indépendant · France</span>
-            <span className="tabular">N° {String(projects.length).padStart(2, "0")}</span>
-          </div>
+      <section className="relative overflow-hidden">
+        {/* Subtle warm gradient in the background */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-cream-100 via-cream-50 to-cream-50"
+        />
 
-          <div className="mt-10 grid gap-10 md:grid-cols-12 md:gap-8">
-            <div className="md:col-span-8">
-              <h1 className="text-[clamp(2rem,3vw+1rem,3.5rem)] leading-[1.05] tracking-[-0.02em] font-medium">
-                Nosfac Studios construit des jeux à règles courtes,
-                <br />
-                <span className="text-foreground-muted">testés en jeu avant d&apos;être finis.</span>
+        <div className="mx-auto max-w-[1200px] px-5 pt-12 pb-16 md:px-8 md:pt-20 md:pb-24">
+          <div className="grid items-center gap-12 md:grid-cols-12 md:gap-10">
+            {/* Left — copy + CTAs */}
+            <div className="md:col-span-7">
+              <span className="inline-flex items-center gap-2 rounded-full border border-accent-100 bg-accent-50 px-3 py-1 text-[12px] font-medium text-accent-700">
+                <span className="size-1.5 rounded-full bg-accent-500" />
+                Studio indépendant · France
+              </span>
+
+              <h1 className="mt-6 text-[clamp(2.25rem,3vw+1.25rem,3.75rem)] leading-[1.05] tracking-[-0.025em] font-semibold text-foreground">
+                Des jeux mobiles qui se comprennent
+                <br className="hidden md:block" /> en quelques secondes.
               </h1>
 
-              <p className="mt-8 max-w-xl text-[17px] leading-[1.6] text-foreground-muted">
-                Studio indépendant basé en France. Trois projets en cours&nbsp;:
-                un jeu mobile de chaînes de mots, un jeu de connaissances multijoueur,
-                et un jeu musical dont le nom n&apos;est pas encore choisi.
+              <p className="mt-6 max-w-xl text-[17px] leading-[1.6] text-foreground-muted">
+                Nosfac Studios développe trois projets en parallèle&nbsp;: un jeu de chaînes de
+                mots, un jeu de connaissances multijoueur, et un jeu musical.
+                Nous construisons lentement, testons en jeu, et ne promettons que ce qui est prêt.
               </p>
 
-              <div className="mt-10 flex items-baseline gap-8">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <NextLink
                   href="/projects"
-                  className="inline-flex items-baseline gap-2 border-b border-foreground pb-0.5 text-[15px] font-medium hover:text-accent-600 hover:border-accent-600 transition-colors duration-(--duration-fast)"
+                  className="group inline-flex h-12 items-center gap-2 rounded-full bg-foreground px-6 text-[14px] font-medium text-surface transition-all duration-(--duration-standard) ease-(--ease-expressive) hover:bg-accent-600 hover:shadow-md"
                   data-testid="hero-cta-projects"
                 >
-                  Voir les projets
-                  <span aria-hidden className="text-[13px]">→</span>
+                  Découvrir les projets
+                  <span
+                    aria-hidden
+                    className="transition-transform duration-(--duration-standard) ease-(--ease-expressive) group-hover:translate-x-0.5"
+                  >
+                    →
+                  </span>
                 </NextLink>
                 <NextLink
-                  href="/about"
-                  className="text-[15px] text-foreground-muted hover:text-foreground link-underline"
+                  href="/support/contact"
+                  className="inline-flex h-12 items-center gap-2 rounded-full border border-border-strong bg-surface-elevated px-6 text-[14px] font-medium text-foreground transition-colors duration-(--duration-fast) hover:border-foreground"
+                  data-testid="hero-cta-contact"
                 >
-                  À propos du studio
+                  Nous contacter
                 </NextLink>
+              </div>
+
+              <div className="mt-8 flex items-center gap-6 text-[13px] text-foreground-subtle">
+                <span className="flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-success-500" />
+                  Chain en développement actif
+                </span>
+                <span className="hidden sm:inline">·</span>
+                <span className="hidden sm:inline">Nouveaux projets à venir</span>
               </div>
             </div>
 
-            {/* Right column — table of contents style */}
-            <aside className="md:col-span-4 md:pl-6 md:border-l border-border-subtle">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-                Dans ce numéro
-              </p>
-              <ol className="mt-4 space-y-3 text-[14px]">
-                {projects.map((project, i) => (
-                  <li key={project.slug} className="flex items-baseline gap-3">
-                    <span className="tabular text-foreground-subtle">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="flex-1">
-                      <NextLink
-                        href={`/projects/${project.slug}`}
-                        className="link-underline font-medium"
-                      >
-                        {project.name}
-                      </NextLink>
-                      <span className="ml-2 text-foreground-subtle">
-                        · {STATUS_LABELS[project.status].label.toLowerCase()}
+            {/* Right — Product mockup with real image */}
+            {featured?.heroMedia?.type === "image" && featured.heroMedia.src && (
+              <div className="md:col-span-5">
+                <div className="relative">
+                  {/* Soft accent halo behind product */}
+                  <div
+                    aria-hidden
+                    className="absolute -inset-8 -z-10 rounded-full bg-accent-100/60 blur-3xl"
+                  />
+                  <NextLink
+                    href={`/projects/${featured.slug}`}
+                    className="group block overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated shadow-lg card-lift"
+                  >
+                    <Image
+                      src={featured.heroMedia.src}
+                      alt={featured.heroMedia.alt}
+                      width={featured.heroMedia.width ?? 800}
+                      height={featured.heroMedia.height ?? 600}
+                      className="h-auto w-full"
+                      priority
+                    />
+                    <div className="flex items-center justify-between border-t border-border-subtle bg-surface-elevated px-5 py-4">
+                      <div>
+                        <p className="text-[13px] text-foreground-subtle">Projet principal</p>
+                        <p className="text-[15px] font-medium">{featured.name}</p>
+                      </div>
+                      <span className="text-[13px] text-accent-600 group-hover:text-accent-700">
+                        Voir →
                       </span>
                     </div>
-                  </li>
-                ))}
-              </ol>
-            </aside>
+                  </NextLink>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* =========================================================
-          FEATURED PROJECT — Article éditorial dédié.
-          Composition asymétrique, capture réelle intégrée.
+          PROJETS — Cartes produits chaleureuses
       ========================================================= */}
-      {featured && (
-        <section className="border-b border-border-subtle">
-          <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-            <div className="mb-8 flex items-baseline justify-between border-b border-border-subtle pb-4">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-                Projet principal
+      <section className="border-t border-border-subtle bg-cream-100/50">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="mb-10 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[12px] font-medium tracking-wider text-accent-600 uppercase">
+                Projets en cours
               </p>
-              <span className="tabular text-[11px] text-foreground-subtle">01 / {String(projects.length).padStart(2, "0")}</span>
+              <h2 className="mt-2 text-[clamp(1.75rem,2vw+1rem,2.5rem)] leading-[1.1] tracking-[-0.02em] font-semibold">
+                Trois projets, trois univers
+              </h2>
             </div>
-
-            <div className="grid gap-10 md:grid-cols-12 md:gap-10">
-              <div className="md:col-span-7">
-                {featured.heroMedia?.type === "image" && featured.heroMedia.src && (
-                  <div className="relative overflow-hidden bg-surface-elevated">
-                    <Image
-                      src={featured.heroMedia.src}
-                      alt={featured.heroMedia.alt}
-                      width={featured.heroMedia.width ?? 1200}
-                      height={featured.heroMedia.height ?? 800}
-                      className="h-auto w-full"
-                      priority
-                    />
-                  </div>
-                )}
-                {(!featured.heroMedia || featured.heroMedia.type !== "image" || !featured.heroMedia.src) && (
-                  <div className="aspect-[4/3] bg-surface-elevated" aria-hidden />
-                )}
-              </div>
-
-              <div className="md:col-span-5 md:pt-4">
-                <p className="text-[12px] text-foreground-subtle tabular">
-                  {STATUS_LABELS[featured.status].label}
-                  {featured.platforms.length > 0 && (
-                    <> · {featured.platforms.map((p) => p.label).join(", ")}</>
-                  )}
-                </p>
-                <h2 className="mt-3 text-[32px] leading-[1.1] tracking-[-0.02em] font-medium md:text-[40px]">
-                  {featured.name}
-                </h2>
-                <p className="mt-5 text-[17px] leading-[1.6] text-foreground-muted max-w-md">
-                  {featured.summary}
-                </p>
-
-                <div className="mt-8 border-t border-border-subtle pt-5">
-                  <NextLink
-                    href={`/projects/${featured.slug}`}
-                    className="inline-flex items-baseline gap-2 text-[15px] font-medium link-underline"
-                    data-testid="hero-featured-link"
-                  >
-                    Lire la fiche projet
-                    <span aria-hidden>→</span>
-                  </NextLink>
-                </div>
-              </div>
-            </div>
+            <NextLink
+              href="/projects"
+              className="hidden text-[14px] font-medium link-underline sm:inline-flex"
+            >
+              Tous les projets →
+            </NextLink>
           </div>
-        </section>
-      )}
 
-      {/* =========================================================
-          OTHER PROJECTS — Sommaire dense, presque textuel.
-          Deux colonnes, pas de mockups répétés.
-      ========================================================= */}
-      {others.length > 0 && (
-        <section className="border-b border-border-subtle">
-          <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-            <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-                Autres projets
-              </p>
-              <span className="tabular text-[11px] text-foreground-subtle">
-                {String(others.length).padStart(2, "0")} en cours
-              </span>
-            </div>
+          <div className="grid gap-6 md:grid-cols-3 md:gap-6">
+            {projects.map((project) => (
+              <NextLink
+                key={project.slug}
+                href={`/projects/${project.slug}`}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated card-lift"
+                data-testid={`home-project-${project.slug}`}
+              >
+                <div className="relative aspect-[16/10] overflow-hidden bg-cream-100">
+                  {project.heroMedia?.type === "image" && project.heroMedia.src ? (
+                    <Image
+                      src={project.heroMedia.src}
+                      alt={project.heroMedia.alt}
+                      fill
+                      className="object-cover transition-transform duration-(--duration-expressive) ease-(--ease-expressive) group-hover:scale-[1.02]"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-foreground-subtle text-sm">
+                      Aperçu à venir
+                    </div>
+                  )}
+                </div>
 
-            <div className="grid gap-x-10 gap-y-14 md:grid-cols-2">
-              {others.map((project, i) => (
-                <article key={project.slug} className="group">
-                  <p className="tabular text-[11px] text-foreground-subtle">
-                    {String(i + 2).padStart(2, "0")} · {STATUS_LABELS[project.status].label}
+                <div className="flex flex-1 flex-col gap-3 p-5">
+                  <div className="flex items-center gap-2 text-[12px]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-cream-100 px-2.5 py-0.5 text-foreground-muted">
+                      <span
+                        className={
+                          "size-1.5 rounded-full " +
+                          (project.status === "development" || project.status === "public-beta" || project.status === "private-beta"
+                            ? "bg-accent-500"
+                            : project.status === "released"
+                              ? "bg-success-500"
+                              : "bg-stone-400")
+                        }
+                      />
+                      {STATUS_LABELS[project.status].label}
+                    </span>
                     {project.platforms.length > 0 && (
-                      <> · {project.platforms.map((p) => p.label).join(", ")}</>
+                      <span className="text-foreground-subtle">
+                        · {project.platforms.map((p) => p.label).join(", ")}
+                      </span>
                     )}
-                  </p>
-                  <h3 className="mt-3 text-[26px] leading-[1.1] tracking-[-0.015em] font-medium">
-                    <NextLink
-                      href={`/projects/${project.slug}`}
-                      className="hover:text-accent-600 transition-colors duration-(--duration-fast)"
-                    >
-                      {project.name}
-                    </NextLink>
+                  </div>
+
+                  <h3 className="text-[20px] font-semibold tracking-tight text-foreground group-hover:text-accent-600 transition-colors">
+                    {project.name}
                     {project.provisionalName && (
-                      <span className="ml-2 text-[15px] font-normal text-foreground-subtle">
+                      <span className="ml-1.5 text-[13px] font-normal text-foreground-subtle">
                         (nom provisoire)
                       </span>
                     )}
                   </h3>
-                  <p className="mt-3 text-[15px] leading-[1.6] text-foreground-muted max-w-md">
+
+                  <p className="flex-1 text-[14px] leading-[1.55] text-foreground-muted">
                     {project.summary}
                   </p>
-                  <NextLink
-                    href={`/projects/${project.slug}`}
-                    className="mt-4 inline-flex items-baseline gap-1.5 text-[14px] link-underline"
-                  >
-                    Fiche projet
-                    <span aria-hidden>→</span>
-                  </NextLink>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
-      {/* =========================================================
-          APPROACH — 4 lignes courtes, format éditorial.
-          Pas de numérotage 01/02/03 tape-à-l'oeil.
-      ========================================================= */}
-      <section className="border-b border-border-subtle">
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
-          <div className="mb-10 border-b border-border-subtle pb-4">
-            <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-              Approche
-            </p>
-          </div>
-
-          <div className="grid gap-10 md:grid-cols-12 md:gap-8">
-            <h2 className="md:col-span-5 text-[32px] leading-[1.1] tracking-[-0.02em] font-medium md:text-[40px]">
-              Peu de projets, menés jusqu&apos;au bout.
-            </h2>
-
-            <dl className="md:col-span-7 divide-y divide-border-subtle">
-              {[
-                {
-                  term: "Règles simples d'abord",
-                  desc: "Chaque projet part d'une règle lisible en quelques secondes. Le reste se construit autour, sans surcharge inutile.",
-                },
-                {
-                  term: "Vérifié en jeu",
-                  desc: "Les décisions sont testées sur les vrais appareils, avec des joueurs réels. Le journal de développement documente les itérations.",
-                },
-                {
-                  term: "Sans promesse invérifiable",
-                  desc: "Nous n'annonçons ni date de sortie ni fonctionnalité tant qu'elle n'est pas stabilisée. Les statuts affichés sont les vrais statuts.",
-                },
-              ].map((item) => (
-                <div key={item.term} className="grid gap-2 py-5 md:grid-cols-4 md:gap-6">
-                  <dt className="text-[15px] font-medium md:col-span-1">{item.term}</dt>
-                  <dd className="text-[15px] leading-[1.6] text-foreground-muted md:col-span-3">
-                    {item.desc}
-                  </dd>
+                  <span className="mt-2 text-[13px] font-medium text-accent-600">
+                    En savoir plus →
+                  </span>
                 </div>
-              ))}
-            </dl>
+              </NextLink>
+            ))}
+          </div>
+
+          <div className="mt-6 flex sm:hidden">
+            <NextLink
+              href="/projects"
+              className="inline-flex items-center gap-1.5 text-[14px] font-medium link-underline"
+            >
+              Voir tous les projets →
+            </NextLink>
           </div>
         </div>
       </section>
 
       {/* =========================================================
-          JOURNAL — Only if real articles exist.
+          APPROCHE — 3 principes produit
+      ========================================================= */}
+      <section className="border-t border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="mb-12 max-w-2xl">
+            <p className="text-[12px] font-medium tracking-wider text-accent-600 uppercase">
+              Approche
+            </p>
+            <h2 className="mt-2 text-[clamp(1.75rem,2vw+1rem,2.5rem)] leading-[1.1] tracking-[-0.02em] font-semibold">
+              Peu de projets, menés jusqu&apos;au bout.
+            </h2>
+            <p className="mt-4 text-[17px] leading-[1.6] text-foreground-muted">
+              Nous préférons un jeu qui existe vraiment à dix promesses jamais tenues. Chaque
+              décision est testée dans le vrai jeu, pas seulement sur le papier.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3 md:gap-8">
+            {[
+              {
+                title: "Règles simples d'abord",
+                desc: "Chaque projet part d'une mécanique compréhensible en quelques secondes. Le reste se construit autour, sans surcharger.",
+              },
+              {
+                title: "Vérifié en jeu",
+                desc: "Les décisions sont testées sur les vrais appareils, avec des joueurs réels. Le journal documente les itérations.",
+              },
+              {
+                title: "Sans promesse invérifiable",
+                desc: "Aucune date de sortie ni fonctionnalité n'est annoncée avant d'être stabilisée. Les statuts affichés sont les vrais statuts.",
+              },
+            ].map((item, i) => (
+              <div
+                key={item.title}
+                className="rounded-2xl border border-border-subtle bg-surface-elevated p-6"
+              >
+                <span className="inline-flex size-9 items-center justify-center rounded-full bg-accent-50 text-[14px] font-semibold text-accent-600 tabular">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="mt-4 text-[17px] font-semibold tracking-tight">{item.title}</h3>
+                <p className="mt-2 text-[14px] leading-[1.6] text-foreground-muted">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          JOURNAL — Only if real articles exist
       ========================================================= */}
       {articles.length > 0 && (
-        <section className="border-b border-border-subtle">
+        <section className="border-t border-border-subtle bg-cream-100/50">
           <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-            <div className="mb-10 flex items-baseline justify-between border-b border-border-subtle pb-4">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-                Dernières notes
-              </p>
+            <div className="mb-10 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[12px] font-medium tracking-wider text-accent-600 uppercase">
+                  Journal
+                </p>
+                <h2 className="mt-2 text-[clamp(1.5rem,1.5vw+1rem,2.25rem)] leading-[1.1] tracking-[-0.02em] font-semibold">
+                  Dernières avancées
+                </h2>
+              </div>
               <NextLink
                 href="/journal"
-                className="text-[13px] text-foreground-muted link-underline"
+                className="text-[14px] font-medium link-underline"
               >
-                Tout le journal
+                Tout le journal →
               </NextLink>
             </div>
-
-            <ul className="divide-y divide-border-subtle">
+            <ul className="grid gap-4 md:grid-cols-3">
               {articles.map((article) => (
                 <li key={article.frontmatter.slug}>
                   <NextLink
                     href={`/journal/${article.frontmatter.slug}`}
-                    className="group grid gap-2 py-5 md:grid-cols-12 md:gap-6"
+                    className="group flex h-full flex-col rounded-2xl border border-border-subtle bg-surface-elevated p-5 card-lift"
                   >
                     <time
-                      className="tabular text-[13px] text-foreground-subtle md:col-span-2"
+                      className="tabular text-[12px] text-foreground-subtle"
                       dateTime={article.frontmatter.publishedAt}
                     >
                       {new Intl.DateTimeFormat("fr-FR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
+                        day: "2-digit", month: "short", year: "numeric",
                       }).format(new Date(article.frontmatter.publishedAt))}
                     </time>
-                    <h3 className="text-[17px] font-medium md:col-span-6 group-hover:text-accent-600 transition-colors">
+                    <h3 className="mt-3 text-[17px] font-semibold group-hover:text-accent-600 transition-colors">
                       {article.frontmatter.title}
                     </h3>
-                    <p className="text-[15px] text-foreground-muted md:col-span-4">
+                    <p className="mt-2 flex-1 text-[14px] leading-[1.55] text-foreground-muted">
                       {article.frontmatter.summary}
                     </p>
                   </NextLink>
@@ -316,39 +320,43 @@ export default function HomePage() {
       )}
 
       {/* =========================================================
-          COLOPHON — Contact simple, pas de CTA gigantesque.
+          CTA — Contact, warmer than an editorial masthead
       ========================================================= */}
-      <section>
-        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-20">
-          <div className="grid gap-8 md:grid-cols-12 md:gap-8">
-            <div className="md:col-span-5">
-              <p className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle">
-                Contact
-              </p>
-              <h2 className="mt-3 text-[28px] leading-[1.15] tracking-[-0.015em] font-medium md:text-[32px]">
-                Presse, partenariats, retours de test&nbsp;: écrivez-nous.
-              </h2>
-            </div>
-            <div className="md:col-span-7 md:pl-6 md:border-l border-border-subtle md:pt-1">
-              <p className="text-[15px] leading-[1.6] text-foreground-muted max-w-md">
-                Nous lisons chaque message. Aucun délai n&apos;est garanti, mais les demandes
-                sérieuses reçoivent toujours une réponse.
-              </p>
-              <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:gap-6">
-                <NextLink
-                  href="/support/contact"
-                  className="inline-flex items-baseline gap-2 border-b border-foreground pb-0.5 text-[15px] font-medium hover:text-accent-600 hover:border-accent-600 transition-colors"
-                  data-testid="cta-contact"
-                >
-                  Formulaire de contact
-                  <span aria-hidden className="text-[13px]">→</span>
-                </NextLink>
-                <a
-                  href={`mailto:${SITE.contactEmail}`}
-                  className="text-[14px] text-foreground-muted link-underline font-mono"
-                >
-                  {SITE.contactEmail}
-                </a>
+      <section className="border-t border-border-subtle">
+        <div className="mx-auto max-w-[1200px] px-5 py-16 md:px-8 md:py-24">
+          <div className="rounded-3xl border border-border-subtle bg-cream-100 p-8 md:p-14">
+            <div className="grid gap-8 md:grid-cols-12 md:items-center md:gap-10">
+              <div className="md:col-span-8">
+                <h2 className="text-[clamp(1.5rem,1.5vw+1rem,2.25rem)] leading-[1.15] tracking-[-0.02em] font-semibold">
+                  Une question, un retour de test, une opportunité&nbsp;?
+                </h2>
+                <p className="mt-3 text-[16px] leading-[1.6] text-foreground-muted max-w-lg">
+                  Nous lisons chaque message. Presse, partenariats, candidatures, bugs&nbsp;:
+                  écrivez-nous. Aucun message ne reste sans réponse.
+                </p>
+              </div>
+              <div className="md:col-span-4 md:text-right">
+                <div className="flex flex-col gap-3 md:items-end">
+                  <NextLink
+                    href="/support/contact"
+                    className="group inline-flex h-12 items-center gap-2 rounded-full bg-foreground px-6 text-[14px] font-medium text-surface transition-all duration-(--duration-standard) hover:bg-accent-600 hover:shadow-md"
+                    data-testid="cta-contact"
+                  >
+                    Formulaire de contact
+                    <span
+                      aria-hidden
+                      className="transition-transform duration-(--duration-standard) group-hover:translate-x-0.5"
+                    >
+                      →
+                    </span>
+                  </NextLink>
+                  <a
+                    href={`mailto:${SITE.contactEmail}`}
+                    className="text-[13px] text-foreground-muted link-underline font-mono"
+                  >
+                    {SITE.contactEmail}
+                  </a>
+                </div>
               </div>
             </div>
           </div>

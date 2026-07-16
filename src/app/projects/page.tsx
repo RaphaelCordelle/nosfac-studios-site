@@ -8,7 +8,7 @@ import { ProjectTypeSchema, type ProjectType, STATUS_LABELS } from "@/domain/pro
 
 export const metadata: Metadata = {
   title: "Projets",
-  description: "Jeux, applications et expérimentations construits sous Nosfac Studios.",
+  description: "Jeux et projets développés par Nosfac Studios.",
 };
 
 const TYPE_LABELS: Record<ProjectType, string> = {
@@ -29,39 +29,34 @@ export default async function ProjectsIndexPage({
   const allProjects = getPublicProjects();
   const projects = activeType ? allProjects.filter((p) => p.type === activeType) : allProjects;
   const availableTypes = Array.from(new Set(allProjects.map((p) => p.type)));
-  const total = allProjects.length;
 
   return (
     <div>
-      {/* Masthead */}
-      <section className="border-b border-border-subtle">
-        <div className="mx-auto max-w-[1200px] px-5 pt-10 pb-10 md:px-8 md:pt-14 md:pb-14">
-          <div className="flex items-baseline justify-between gap-6 text-[12px] text-foreground-subtle">
-            <span>Catalogue</span>
-            <span className="tabular">{String(total).padStart(2, "0")} projets</span>
-          </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-12 md:gap-8">
-            <h1 className="md:col-span-7 text-[clamp(2rem,3vw+1rem,3rem)] leading-[1.05] tracking-[-0.02em] font-medium">
-              Projets
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-cream-100 to-cream-50">
+        <div className="mx-auto max-w-[1200px] px-5 pt-14 pb-12 md:px-8 md:pt-20 md:pb-16">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent-100 bg-accent-50 px-3 py-1 text-[12px] font-medium text-accent-700">
+            Catalogue · {allProjects.length} projet{allProjects.length > 1 ? "s" : ""}
+          </span>
+          <div className="mt-6 grid gap-6 md:grid-cols-12 md:gap-8">
+            <h1 className="md:col-span-7 text-[clamp(2rem,3vw+1rem,3rem)] leading-[1.05] tracking-[-0.02em] font-semibold">
+              Ce que nous construisons
             </h1>
-            <p className="md:col-span-5 text-[15px] leading-[1.6] text-foreground-muted md:pt-3">
-              Chaque projet est présenté au stade où il en est. Aucun date de sortie n&apos;est
+            <p className="md:col-span-5 md:pt-3 text-[16px] leading-[1.65] text-foreground-muted">
+              Chaque projet est présenté au stade où il en est. Aucune date de sortie n&apos;est
               affichée avant qu&apos;elle ne soit tenue.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Filters — inline discrets */}
+      {/* Filters */}
       {availableTypes.length > 1 && (
-        <div className="border-b border-border-subtle">
+        <div className="border-b border-border-subtle bg-surface">
           <nav
             aria-label="Filtrer les projets"
-            className="mx-auto flex max-w-[1200px] items-center gap-3 overflow-x-auto px-5 py-3 md:px-8"
+            className="mx-auto flex max-w-[1200px] items-center gap-2 overflow-x-auto px-5 py-4 md:px-8"
           >
-            <span className="text-[11px] uppercase tracking-[0.14em] text-foreground-subtle whitespace-nowrap">
-              Filtres
-            </span>
             <FilterChip href="/projects" active={!activeType}>
               Tous · {allProjects.length}
             </FilterChip>
@@ -77,68 +72,80 @@ export default async function ProjectsIndexPage({
         </div>
       )}
 
-      {/* Grid — full editorial list, no cards. Each project = article. */}
-      <div className="mx-auto max-w-[1200px] px-5 py-8 md:px-8 md:py-16">
+      {/* Grid */}
+      <div className="mx-auto max-w-[1200px] px-5 py-12 md:px-8 md:py-16">
         {projects.length === 0 ? (
           <EmptyState
             title="Aucun projet ne correspond à ces filtres."
             action={<FilterChip href="/projects" active>Réinitialiser</FilterChip>}
           />
         ) : (
-          <ol className="divide-y divide-border-subtle">
-            {projects.map((project, i) => (
-              <li key={project.slug}>
-                <NextLink
-                  href={`/projects/${project.slug}`}
-                  className="group grid gap-6 py-10 md:grid-cols-12 md:gap-8 md:py-14"
-                >
-                  <div className="tabular text-[13px] text-foreground-subtle md:col-span-1">
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
+          <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+            {projects.map((project) => (
+              <NextLink
+                key={project.slug}
+                href={`/projects/${project.slug}`}
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated card-lift"
+                data-testid={`project-card-${project.slug}`}
+              >
+                <div className="relative aspect-[16/10] overflow-hidden bg-cream-100">
+                  {project.heroMedia?.type === "image" && project.heroMedia.src ? (
+                    <Image
+                      src={project.heroMedia.src}
+                      alt={project.heroMedia.alt}
+                      fill
+                      className="object-cover transition-transform duration-(--duration-expressive) group-hover:scale-[1.02]"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-foreground-subtle text-sm">
+                      Aperçu à venir
+                    </div>
+                  )}
+                </div>
 
-                  <div className="md:col-span-4">
-                    {project.heroMedia?.type === "image" && project.heroMedia.src ? (
-                      <div className="relative overflow-hidden bg-surface-elevated">
-                        <Image
-                          src={project.heroMedia.src}
-                          alt={project.heroMedia.alt}
-                          width={project.heroMedia.width ?? 800}
-                          height={project.heroMedia.height ?? 600}
-                          className="h-auto w-full transition-opacity duration-(--duration-standard) group-hover:opacity-90"
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-[4/3] bg-surface-elevated" aria-hidden />
+                <div className="flex flex-1 flex-col gap-3 p-6">
+                  <div className="flex items-center gap-2 text-[12px]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-cream-100 px-2.5 py-0.5 text-foreground-muted">
+                      <span
+                        className={
+                          "size-1.5 rounded-full " +
+                          (project.status === "development" || project.status === "public-beta" || project.status === "private-beta"
+                            ? "bg-accent-500"
+                            : project.status === "released"
+                              ? "bg-success-500"
+                              : "bg-stone-400")
+                        }
+                      />
+                      {STATUS_LABELS[project.status].label}
+                    </span>
+                    {project.platforms.length > 0 && (
+                      <span className="text-foreground-subtle">
+                        · {project.platforms.map((p) => p.label).join(", ")}
+                      </span>
                     )}
                   </div>
 
-                  <div className="md:col-span-7 md:pl-4">
-                    <p className="text-[12px] text-foreground-subtle tabular">
-                      {STATUS_LABELS[project.status].label}
-                      {project.platforms.length > 0 && (
-                        <> · {project.platforms.map((p) => p.label).join(", ")}</>
-                      )}
-                    </p>
-                    <h2 className="mt-2 text-[26px] leading-[1.1] tracking-[-0.015em] font-medium md:text-[32px] group-hover:text-accent-600 transition-colors">
-                      {project.name}
-                      {project.provisionalName && (
-                        <span className="ml-2 text-[15px] font-normal text-foreground-subtle">
-                          (nom provisoire)
-                        </span>
-                      )}
-                    </h2>
-                    <p className="mt-3 text-[15px] leading-[1.6] text-foreground-muted max-w-lg">
-                      {project.summary}
-                    </p>
-                    <span className="mt-4 inline-flex items-baseline gap-1.5 text-[14px] font-medium link-underline">
-                      Fiche projet
-                      <span aria-hidden>→</span>
-                    </span>
-                  </div>
-                </NextLink>
-              </li>
+                  <h2 className="text-[24px] font-semibold tracking-tight leading-tight group-hover:text-accent-600 transition-colors">
+                    {project.name}
+                    {project.provisionalName && (
+                      <span className="ml-2 text-[14px] font-normal text-foreground-subtle">
+                        (nom provisoire)
+                      </span>
+                    )}
+                  </h2>
+
+                  <p className="flex-1 text-[15px] leading-[1.6] text-foreground-muted">
+                    {project.summary}
+                  </p>
+
+                  <span className="mt-2 text-[14px] font-medium text-accent-600">
+                    En savoir plus →
+                  </span>
+                </div>
+              </NextLink>
             ))}
-          </ol>
+          </div>
         )}
       </div>
     </div>

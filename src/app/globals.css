@@ -6,6 +6,7 @@
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
   --color-surface-sunken: var(--surface-sunken);
+  --color-surface-warm: var(--surface-warm);
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
   --color-foreground-subtle: var(--foreground-subtle);
@@ -18,28 +19,50 @@
   --color-brand-500: var(--brand-500);
   --color-brand-300: var(--brand-300);
 
-  --color-accent-500: var(--accent-500);
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
   --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
   --color-accent-600: var(--accent-600);
   --color-accent-700: var(--accent-700);
+
+  --color-amber-100: var(--amber-100);
+  --color-amber-500: var(--amber-500);
+  --color-highlight-500: var(--highlight-500);
 
   --color-success-500: var(--success-500);
   --color-warning-500: var(--warning-500);
   --color-danger-500: var(--danger-500);
-  --color-highlight-500: var(--highlight-500);
+
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-display: var(--font-display);
+
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
 }
 
 @keyframes accordion-down { from { height: 0; } to { height: var(--radix-accordion-content-height); } }
 @keyframes accordion-up { from { height: var(--radix-accordion-content-height); } to { height: 0; } }
 
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 @layer base {
   * { border-color: var(--border-subtle); }
 
-  html { height: 100%; }
+  html {
+    height: 100%;
+    scroll-behavior: smooth;
+  }
 
   body {
     background: var(--surface);
@@ -53,8 +76,12 @@
   }
 
   ::selection {
-    background: var(--foreground);
-    color: var(--surface);
+    background: var(--accent-100);
+    color: var(--accent-700);
+  }
+  :root[data-theme="dark"] ::selection {
+    background: var(--accent-500);
+    color: white;
   }
 
   :focus-visible {
@@ -63,7 +90,6 @@
     border-radius: 2px;
   }
 
-  /* Editorial serif — reserved for very specific contexts only */
   .font-display {
     font-family: var(--font-display);
     font-style: italic;
@@ -73,7 +99,7 @@
 }
 
 @layer utilities {
-  /* Editorial underline — subtle, never automatic on all links */
+  /* Link underline — plus doux */
   .link-underline {
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -86,12 +112,21 @@
     text-decoration-color: currentColor;
   }
 
-  /* Rule utility — 1px filet éditorial */
-  .rule {
-    height: 1px;
-    background: var(--border-subtle);
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* Card lift au hover — sensation produit */
+  .card-lift {
+    transition: transform var(--duration-standard) var(--ease-expressive),
+                box-shadow var(--duration-standard) var(--ease-standard),
+                border-color var(--duration-fast) var(--ease-standard);
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 
-  /* Tabular figures for numbers */
-  .tabular { font-variant-numeric: tabular-nums; }
+  /* Fade in up simple */
+  .animate-fade-in-up {
+    animation: fade-in-up 500ms var(--ease-expressive) both;
+  }
 }

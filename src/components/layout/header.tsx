@@ -10,19 +10,34 @@ import { Logo } from "@/components/layout/logo";
 import { cn } from "@/lib/utils";
 
 /**
- * Header — Sobre, presque monochrome.
- * Pas de dot cyan pulsant sur l'état actif. Pas de bouton pilule turquoise.
- * Border-bottom fine visible dès le départ, comme la banda d'un journal.
+ * Header — Fond clair chaleureux, plus warm que le style éditorial.
+ * L'état actif est mis en valeur par un fond léger accent-50 + texte accent,
+ * plus engageant qu'un simple filet.
  */
 export function Header({ nav }: { nav: NavItem[] }) {
   const pathname = usePathname();
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    function handleScroll() { setScrolled(window.scrollY > 8); }
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border-subtle bg-surface/90 backdrop-blur-md">
-      <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between gap-4 px-5 md:h-16 md:px-8">
+    <header
+      className={cn(
+        "sticky top-0 z-40 transition-all duration-(--duration-standard)",
+        scrolled
+          ? "border-b border-border-subtle bg-surface/85 backdrop-blur-md"
+          : "border-b border-transparent bg-transparent",
+      )}
+    >
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-5 md:h-16 md:px-8">
         <NextLink
           href="/"
-          className="group flex min-h-11 items-center gap-2.5"
+          className="flex min-h-11 items-center gap-2.5 transition-opacity hover:opacity-80"
           aria-label="Nosfac Studios — Accueil"
         >
           <Logo />
@@ -41,19 +56,13 @@ export function Header({ nav }: { nav: NavItem[] }) {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "relative flex h-10 items-center px-3 text-[14px] transition-colors duration-(--duration-fast)",
+                      "flex h-9 items-center rounded-full px-3.5 text-[14px] transition-colors duration-(--duration-fast)",
                       active
-                        ? "text-foreground font-medium"
+                        ? "bg-accent-50 text-accent-700 font-medium"
                         : "text-foreground-muted hover:text-foreground",
                     )}
                   >
                     {item.label}
-                    {active && (
-                      <span
-                        aria-hidden
-                        className="absolute inset-x-3 -bottom-[13px] h-px bg-foreground md:-bottom-[15px]"
-                      />
-                    )}
                   </NextLink>
                 </li>
               );
@@ -65,7 +74,7 @@ export function Header({ nav }: { nav: NavItem[] }) {
           <ThemeToggle className="hidden md:flex" />
           <NextLink
             href={CONTACT_NAV.href}
-            className="hidden h-10 items-center text-[14px] font-medium text-foreground link-underline md:inline-flex"
+            className="hidden h-9 items-center rounded-full bg-foreground px-4 text-[13px] font-medium text-surface transition-colors duration-(--duration-fast) hover:bg-accent-600 md:inline-flex"
             data-testid="header-contact-button"
           >
             {CONTACT_NAV.label}
