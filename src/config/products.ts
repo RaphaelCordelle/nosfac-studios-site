@@ -51,6 +51,19 @@ export interface ProductConfig {
   /** Providers actually used by THIS product (from the audit) */
   providers: string[];
 
+  /**
+   * Region where the primary backend / database of THIS product is hosted.
+   * Free-form label (e.g., "Irlande (Supabase eu-west-1)"). null when the
+   * product has no active backend yet.
+   */
+  backendRegion: string | null;
+
+  /**
+   * Public audience minimum age retained for launch. Marketing target, not the
+   * IARC classification. null when not yet decided for this product.
+   */
+  targetMinimumAge: number | null;
+
   /** Data categories actually collected by THIS product (in the currently shipped version) */
   dataCategories: DataCategory[];
 
@@ -83,6 +96,8 @@ export const CHAIN: ProductConfig = {
   hasInAppPurchases: false, // Google Play Billing pas encore activé publiquement
   hasAdvertising: false, // Aucun SDK publicitaire détecté à date
   providers: ["Supabase", "Google Play (distribution uniquement pour Android)"],
+  backendRegion: "Irlande (Supabase, région eu-west-1)",
+  targetMinimumAge: 16,
   dataCategories: [
     {
       category: "Identifiant de compte interne",
@@ -147,6 +162,8 @@ export const KNOWOUT: ProductConfig = {
   hasInAppPurchases: false,
   hasAdvertising: false,
   providers: [],
+  backendRegion: null,
+  targetMinimumAge: 16,
   dataCategories: [],
   verificationDate: "2026-07-15",
   deletionSummary:
@@ -169,6 +186,8 @@ export const MUSIC_GAME: ProductConfig = {
   hasInAppPurchases: false,
   hasAdvertising: false,
   providers: [],
+  backendRegion: null,
+  targetMinimumAge: 16,
   dataCategories: [],
   verificationDate: "2026-07-15",
   deletionSummary:

@@ -163,13 +163,23 @@ export const PROCESSORS = {
   },
 } as const;
 
-/** Age restrictions and minors policy */
+/** Age restrictions and minors policy — decision confirmed for the three current projects */
 export const AGE_POLICY = {
-  /** Minimum recommended age - MUST align with Play Store classification */
-  minimumAge: null as number | null,
-  
-  /** Policy description */
-  description: "À définir en cohérence avec la classification IARC et le public cible déclaré dans la Play Console",
+  /**
+   * Public target minimum age retained for the launch of Chain (Play Console
+   * audience targeting: 16-17 and 18+). Same target retained for KnowOut and
+   * the music project, both still in development. This value is a marketing
+   * target: it does NOT prejudge the IARC classification obtained via the
+   * questionnaire.
+   */
+  minimumAge: 16,
+
+  /** Play Console targeted age groups for Chain */
+  chainPlayConsoleGroups: ["16-17", "18+"] as const,
+
+  /** Policy description, shown as-is in the privacy page */
+  description:
+    "Chain, KnowOut et le jeu musical sont conçus pour un public de 16 ans et plus. Ils ne sont ni conçus ni commercialisés à destination des enfants. Le public cible ne préjuge pas de la classification PEGI, obtenue séparément via le questionnaire IARC.",
 } as const;
 
 /**

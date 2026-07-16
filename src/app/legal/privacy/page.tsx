@@ -7,6 +7,7 @@ import {
   CONTACT,
   RETENTION_PERIODS,
   LAST_UPDATED,
+  AGE_POLICY,
 } from "@/config/legal";
 import { PRODUCTS, type ProductConfig } from "@/config/products";
 
@@ -44,6 +45,18 @@ function ProductDataSection({ product }: { product: ProductConfig }) {
         <br />
         <strong>Publicités&nbsp;:</strong>{" "}
         {product.hasAdvertising ? "Oui" : "Non pour le moment"}
+        {product.backendRegion && (
+          <>
+            <br />
+            <strong>Hébergement principal du backend&nbsp;:</strong> {product.backendRegion}
+          </>
+        )}
+        {product.targetMinimumAge !== null && (
+          <>
+            <br />
+            <strong>Public cible retenu&nbsp;:</strong> {product.targetMinimumAge} ans et plus
+          </>
+        )}
       </p>
 
       <p><strong>Prestataires utilisés par ce projet&nbsp;:</strong> {product.providers.join(", ")}</p>
@@ -83,14 +96,21 @@ function ProductDataSection({ product }: { product: ProductConfig }) {
 function ResponsibleSection() {
   if (LEGAL_STATUS === "individual-non-professional") {
     return (
-      <p>
-        Le responsable du traitement des données présentées dans cette politique est le fondateur de{" "}
-        {PUBLIC_BRAND_NAME}, agissant sous ce nom d&apos;usage. Contact&nbsp;:{" "}
-        <a href={`mailto:${CONTACT.email}`} className="underline">
-          {CONTACT.email}
-        </a>
-        .
-      </p>
+      <>
+        <p>
+          Le responsable du traitement au sens du RGPD est la personne physique fondatrice de{" "}
+          {PUBLIC_BRAND_NAME}, agissant sous ce nom d&apos;usage. {PUBLIC_BRAND_NAME} n&apos;est pas
+          une société immatriculée&nbsp;: il s&apos;agit d&apos;un nom public de studio pour des
+          projets menés à titre personnel.
+        </p>
+        <p>
+          Contact&nbsp;:{" "}
+          <a href={`mailto:${CONTACT.email}`} className="underline">
+            {CONTACT.email}
+          </a>
+          .
+        </p>
+      </>
     );
   }
   return (
@@ -248,10 +268,15 @@ export default function PrivacyPage() {
 
       <h2 id="transferts">{5 + PRODUCTS.length}. Transferts hors de l&apos;Espace économique européen</h2>
       <p>
-        Certains prestataires (Vercel, Resend, Cloudflare, Google) peuvent traiter des données
-        aux États-Unis. Ces transferts sont encadrés par les mécanismes juridiques prévus par le
-        RGPD (clauses contractuelles types, décisions d&apos;adéquation), selon les engagements
-        publics de chaque prestataire.
+        La base de données principale utilisée par Chain est hébergée par Supabase dans la région
+        eu-west-1 (Irlande), à l&apos;intérieur de l&apos;Union européenne. {PUBLIC_BRAND_NAME} ne
+        peut cependant pas garantir que l&apos;ensemble des opérations réalisées par ses
+        prestataires (Vercel, Resend, Cloudflare, Google, y compris certains services annexes de
+        Supabase) se déroulent exclusivement au sein de l&apos;Espace économique européen. Ces
+        prestataires peuvent traiter des données depuis les États-Unis ou d&apos;autres pays. Ces
+        transferts sont encadrés par les mécanismes juridiques prévus par le RGPD (clauses
+        contractuelles types, décisions d&apos;adéquation), selon les engagements publics de chaque
+        prestataire.
       </p>
 
       <h2 id="conservation">{6 + PRODUCTS.length}. Durées de conservation</h2>
@@ -270,11 +295,19 @@ export default function PrivacyPage() {
         (par exemple un résultat partagé) restent visibles par les personnes disposant du lien.
       </p>
 
-      <h2 id="mineurs">{8 + PRODUCTS.length}. Mineurs</h2>
+      <h2 id="mineurs">{8 + PRODUCTS.length}. Mineurs et public cible</h2>
+      <p>{AGE_POLICY.description}</p>
       <p>
-        La politique vis-à-vis des mineurs sera précisée pour chaque projet en cohérence avec sa
-        classification IARC et le public cible déclaré dans les fiches Google Play et App Store
-        avant tout lancement commercial.
+        Pour Chain, le public cible retenu correspond aux tranches Google Play Console «&nbsp;16-17
+        ans&nbsp;» et «&nbsp;18 ans et plus&nbsp;». Ce ciblage marketing est indépendant de la
+        classification IARC/PEGI obtenue via le questionnaire de la Play Console, laquelle sera
+        publiée sur les fiches store correspondantes.
+      </p>
+      <p>
+        KnowOut et le jeu musical sont encore en développement. Le public cible «&nbsp;16 ans et
+        plus&nbsp;» leur est également associé, sans que cela dispense {PUBLIC_BRAND_NAME} de
+        finaliser leur classification IARC et leur politique définitive avant toute mise à
+        disposition publique.
       </p>
 
       <h2 id="droits">{9 + PRODUCTS.length}. Vos droits</h2>
