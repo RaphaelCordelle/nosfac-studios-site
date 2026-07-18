@@ -69,6 +69,14 @@ export function ReasonFields({ reason, values, onChange }: FieldProps & { reason
           <TextField id="platform" label="Plateforme" required value={values.platform ?? ""} onChange={(v) => set({ platform: v })} />
         </>
       );
+    case "privacy":
+      return (
+        <>
+          <TextField id="accountRef" label="Identifiant du compte ou pseudonyme" required value={values.accountRef ?? ""} onChange={(v) => set({ accountRef: v })} />
+          <TextField id="subject" label="Objet de la demande" required value={values.subject ?? ""} onChange={(v) => set({ subject: v })} />
+          <TextField id="message" label="Données à supprimer" required multiline value={values.message ?? ""} onChange={(v) => set({ message: v })} />
+        </>
+      );
     case "idea":
       return (
         <>

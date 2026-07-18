@@ -1,6 +1,6 @@
 # Mapping Google Play / App Store — Sécurité des données
 
-**Date** : 15 juillet 2026  
+**Date** : 18 juillet 2026
 **Statut** : Document interne — préparation des fiches Play Console et App Store
 
 ---
@@ -108,8 +108,21 @@ Points à auditer avant publication :
 Pour les trois applications :
 
 - **Chiffrement en transit** : ✅ Oui (HTTPS, TLS)
-- **Suppression demandable** : ✅ Oui (via `/suppression-compte`)
+- **Suppression du compte demandable** : ✅ Oui (via `/suppression-compte#chain`)
+- **Suppression de certaines ou de toutes les données sans suppression du compte** : ✅ Oui (même page, choix des catégories à effacer)
 - **Audit sécurité indépendant** : Non (studio indépendant)
+
+### Réponse Play Console — suppression indépendante du compte
+
+Pour Chain, répondre **Oui** à la question facultative « moyen de demander la suppression d’une
+partie ou de la totalité des données sans supprimer le compte ». Utiliser l’URL publique suivante
+une fois la version déployée :
+
+`https://nosfacstudios.com/suppression-compte#chain`
+
+La page permet de sélectionner l’historique de parties, les statistiques et records, les données
+sociales, les préférences de personnalisation ou les données d’usage facultatives. Le compte reste
+actif lorsque cette option est choisie.
 
 ---
 

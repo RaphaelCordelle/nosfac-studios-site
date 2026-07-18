@@ -92,7 +92,8 @@ export const CHAIN: ProductConfig = {
   platforms: ["iOS", "Android"],
   anchorId: "chain",
   hasAccount: true,
-  hasInAppDeletion: false, // À vérifier — pas encore de mécanisme confirmé
+  hasInAppDeletion: true,
+  inAppDeletionPath: "Profil → Gestion du compte → Supprimer mon compte.",
   hasInAppPurchases: false, // Google Play Billing pas encore activé publiquement
   hasAdvertising: false, // Aucun SDK publicitaire détecté à date
   providers: ["Supabase", "Google Play (distribution uniquement pour Android)"],
@@ -133,16 +134,17 @@ export const CHAIN: ProductConfig = {
       retention: "Tant que le compte existe",
     },
   ],
-  verificationDate: "2026-07-15",
+  verificationDate: "2026-07-18",
   deletionSummary:
-    "La suppression du compte Chain efface définitivement le profil, la progression, les records et l'ensemble des données associées au compte Supabase.",
+    "Vous pouvez demander la suppression de certaines données en conservant votre compte, ou supprimer définitivement le compte et l'ensemble des données qui lui sont associées.",
   deletionConsequences: [
     "Perte du pseudonyme, de l'avatar, du niveau et de tous les records",
     "Perte de l'historique des parties et des statistiques",
     "En cas de recréation ultérieure, la progression repart de zéro",
   ],
   additionalNotes: [
-    "Aucun abonnement Premium n'existe actuellement dans Chain. Si un abonnement Google Play est activé plus tard, il devra être résilié séparément.",
+    "La suppression des données ou du compte n'annule pas automatiquement un éventuel abonnement géré par Google Play. Celui-ci doit être résilié séparément dans Google Play.",
+    "Certaines informations strictement nécessaires à la sécurité, à la prévention de la fraude ou à une obligation légale peuvent être conservées pendant la durée requise.",
   ],
 };
 

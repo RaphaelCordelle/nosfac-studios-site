@@ -9,6 +9,7 @@ import { z } from "zod";
 export const ContactReasonSchema = z.enum([
   "bug",
   "support",
+  "privacy",
   "idea",
   "feedback",
   "business",
@@ -36,6 +37,12 @@ export const REASON_META: Record<
     description: "Une question sur un compte, une sauvegarde ou une plateforme.",
     subjectPrefix: "[SUPPORT]",
     gmailLabel: "Support/General",
+  },
+  privacy: {
+    label: "Données personnelles",
+    description: "Suppression de certaines données ou du compte complet.",
+    subjectPrefix: "[PRIVACY]",
+    gmailLabel: "Legal/Privacy",
   },
   idea: {
     label: "Suggérer une idée",
@@ -158,6 +165,7 @@ export type ContactFormValues = z.infer<typeof ContactFormSchema>;
 export const REQUIRED_FIELDS_BY_REASON: Record<ContactReason, (keyof ContactFormValues)[]> = {
   bug: ["projectSlug", "steps", "expected", "actual"],
   support: ["projectSlug", "platform"],
+  privacy: ["projectSlug", "accountRef", "subject", "message"],
   idea: ["problem", "proposal"],
   feedback: ["message"],
   business: ["organization", "role", "proposal"],

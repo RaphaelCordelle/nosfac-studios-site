@@ -35,4 +35,23 @@ describe("ContactFormSchema", () => {
       expect(Array.isArray(fields)).toBe(true);
     }
   });
+
+  it("accepts a privacy request that identifies the account and requested deletion", () => {
+    const result = ContactFormSchema.safeParse({
+      ...base,
+      reason: "privacy",
+      projectSlug: "chain",
+      accountRef: "player-42",
+      subject: "Suppression partielle de données",
+      message: "Supprimer mon historique de parties et conserver mon compte.",
+    });
+
+    expect(result.success).toBe(true);
+    expect(REQUIRED_FIELDS_BY_REASON.privacy).toEqual([
+      "projectSlug",
+      "accountRef",
+      "subject",
+      "message",
+    ]);
+  });
 });

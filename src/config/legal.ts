@@ -84,10 +84,10 @@ export const LEGAL_URLS = {
 /** Last update dates - UPDATE THESE when you modify legal pages */
 export const LAST_UPDATED = {
   legalNotice: "2026-07-13",
-  privacy: "2026-07-15",
+  privacy: "2026-07-18",
   terms: "2026-07-15",
   cookies: "2026-07-13",
-  accountDeletion: "2026-07-15",
+  accountDeletion: "2026-07-18",
 } as const;
 
 /** Data retention periods - ONLY use verified, implemented durations */

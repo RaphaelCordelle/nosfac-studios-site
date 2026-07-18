@@ -151,7 +151,7 @@ export default function PrivacyPage() {
         <li><a href="#securite" className="underline">Sécurité</a></li>
         <li><a href="#mineurs" className="underline">Mineurs</a></li>
         <li><a href="#droits" className="underline">Vos droits</a></li>
-        <li><a href="#suppression" className="underline">Suppression des comptes</a></li>
+        <li><a href="#suppression" className="underline">Suppression des données et des comptes</a></li>
         <li><a href="#modifications" className="underline">Modifications de la politique</a></li>
       </ol>
 
@@ -332,11 +332,14 @@ export default function PrivacyPage() {
         d&apos;identité peut être demandée en cas de doute légitime.
       </p>
 
-      <h2 id="suppression">{10 + PRODUCTS.length}. Suppression des comptes</h2>
+      <h2 id="suppression">{10 + PRODUCTS.length}. Suppression des données et des comptes</h2>
       <p>
-        La suppression des comptes est traitée sur une page dédiée où vous pouvez choisir le
-        projet concerné&nbsp;:{" "}
-        <a href="/suppression-compte" className="underline">/suppression-compte</a>.
+        Une page publique permet de demander soit la suppression de certaines catégories de
+        données tout en conservant le compte actif, soit la suppression définitive du compte et
+        des données qui lui sont associées. Vous pouvez y choisir le projet concerné&nbsp;:{" "}
+        <a href="/suppression-compte" className="underline">/suppression-compte</a>. Une
+        vérification d’identité raisonnable peut être demandée avant l’effacement afin de protéger
+        les données contre une demande frauduleuse.
       </p>
 
       <h2 id="modifications">{11 + PRODUCTS.length}. Modifications de la politique</h2>
